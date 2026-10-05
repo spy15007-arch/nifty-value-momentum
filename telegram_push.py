@@ -9,18 +9,14 @@ OUTPUT_DIR = Path("output")
 TELEGRAM_LIMIT = 4000
 
 
-def normalize_secret(value):
-    return (value or "").strip().strip('"').strip("'")
-
-
 def send_telegram(message):
 
-    token = normalize_secret(
-        os.getenv("TELEGRAM_BOT_TOKEN")
+    token = os.getenv(
+        "TELEGRAM_BOT_TOKEN"
     )
 
-    chat_id = normalize_secret(
-        os.getenv("TELEGRAM_CHAT_ID")
+    chat_id = os.getenv(
+        "TELEGRAM_CHAT_ID"
     )
 
     if not token:
@@ -31,11 +27,6 @@ def send_telegram(message):
     if not chat_id:
         raise RuntimeError(
             "TELEGRAM_CHAT_ID secret is missing."
-        )
-
-    if chat_id.startswith("https://t.me/") or chat_id.startswith("t.me/"):
-        raise RuntimeError(
-            "TELEGRAM_CHAT_ID must be a numeric chat ID or @username, not a Telegram URL."
         )
 
     url = (
@@ -64,13 +55,7 @@ def send_telegram(message):
             timeout=30,
         )
 
-        try:
-            response.raise_for_status()
-        except requests.HTTPError as exc:
-            error_text = response.text[:500]
-            raise RuntimeError(
-                f"Telegram API rejected chat_id={chat_id!r}: {error_text}"
-            ) from exc
+        response.raise_for_status()
 
         result = response.json()
 
