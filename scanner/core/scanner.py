@@ -33,6 +33,10 @@ def run():
         "ticker"
     ].tolist()
 
+    print(
+        f"Universe loaded: {len(tickers)} stocks"
+    )
+
     data = download_prices(
         tickers
     )
@@ -40,6 +44,10 @@ def run():
     rows = []
 
     nifty_return_6m = 0.0
+
+    # ---------------------------------------------------------
+    # NIFTY 50 BENCHMARK
+    # ---------------------------------------------------------
 
     try:
 
@@ -89,6 +97,12 @@ def run():
             error,
         )
 
+    # ---------------------------------------------------------
+    # PROCESS EACH STOCK
+    # ---------------------------------------------------------
+
+    processed = 0
+
     for _, stock in universe.iterrows():
 
         ticker = stock["ticker"]
@@ -134,27 +148,33 @@ def run():
             )
 
             if ind is None:
+
+                print(
+                    f"Skipping {ticker}: "
+                    "insufficient price history"
+                )
+
                 continue
 
             metrics = latest_metrics(
                 ind
             )
 
-            metrics.update(
-                {
-                    "symbol": stock["symbol"],
-                    "ticker": ticker,
-                    "index": stock["index"],
-                }
+            # -------------------------------------------------
+            # IMPORTANT:
+            # Carry the previous 20-day volume average
+            # into the scoring dataframe.
+            # -------------------------------------------------
+
+            metrics[
+                "vol20_prev"
+            ] = float(
+                ind["vol20_prev"].iloc[-1]
             )
 
-            fundamentals = get_fundamentals(
-                ticker
-            )
-
-            metrics.update(
-                fundamentals
-            )
+            # -------------------------------------------------
+            # Carry moving-average history used by scoring.
+            # -------------------------------------------------
 
             metrics[
                 "sma200_20ago"
@@ -174,7 +194,41 @@ def run():
                 ind["sma20"].iloc[-21]
             )
 
-            rows.append(metrics)
+            # -------------------------------------------------
+            # Stock identity
+            # -------------------------------------------------
+
+            metrics.update(
+                {
+                    "symbol": stock["symbol"],
+                    "ticker": ticker,
+                    "index": stock["index"],
+                }
+            )
+
+            # -------------------------------------------------
+            # FUNDAMENTALS
+            # -------------------------------------------------
+
+            fundamentals = get_fundamentals(
+                ticker
+            )
+
+            metrics.update(
+                fundamentals
+            )
+
+            rows.append(
+                metrics
+            )
+
+            processed += 1
+
+            if processed % 10 == 0:
+
+                print(
+                    f"Processed {processed} stocks..."
+                )
 
         except Exception as error:
 
@@ -182,32 +236,48 @@ def run():
                 f"Skipping {ticker}: {error}"
             )
 
+    # ---------------------------------------------------------
+    # SAFETY CHECK
+    # ---------------------------------------------------------
+
     if not rows:
 
         raise RuntimeError(
             "No stocks could be processed."
         )
 
-    df = pd.DataFrame(rows)
+    df = pd.DataFrame(
+        rows
+    )
 
+    print(
+        f"Successfully processed: {len(df)} stocks"
+    )
+
+    # ---------------------------------------------------------
     # FUNDAMENTAL SCORING
+    # ---------------------------------------------------------
 
     df = score_fundamentals(
         df
     )
 
+    # ---------------------------------------------------------
     # TECHNICAL SCORING
+    # ---------------------------------------------------------
 
     df = technical_scores(
         df,
         nifty_return_6m,
     )
 
-    # Temporary sector proxy.
+    # ---------------------------------------------------------
+    # SECTOR PROXY
     #
-    # The next integration step should replace this
-    # with true NSE sector membership and sector
-    # breadth data.
+    # Temporary version.
+    # Later we can replace this with actual NSE
+    # sector breadth/leadership data.
+    # ---------------------------------------------------------
 
     df["sector_score"] = (
         df["ret3m"]
@@ -250,14 +320,24 @@ def run():
         .apply(sector_bonus)
     )
 
+    # ---------------------------------------------------------
+    # FINAL SCORE
+    # ---------------------------------------------------------
+
     df["final_score"] = (
         df["overall_score"]
         + df["sector_bonus"]
-    ).clip(0, 100)
+    ).clip(
+        0,
+        100,
+    )
 
+    # ---------------------------------------------------------
     # SETUP CLASSIFICATION
+    # ---------------------------------------------------------
 
     df["setup"] = np.select(
+
         [
             (
                 (df["final_score"] >= 80)
@@ -281,7 +361,9 @@ def run():
                 (df["sector_score"] >= 70)
             ),
 
-            df["final_score"] >= 70,
+            (
+                df["final_score"] >= 70
+            ),
         ],
 
         [
@@ -293,7 +375,9 @@ def run():
         default="REJECT",
     )
 
-    # MASTER OUTPUT COLUMNS
+    # ---------------------------------------------------------
+    # OUTPUT COLUMNS
+    # ---------------------------------------------------------
 
     columns = [
 
@@ -320,6 +404,7 @@ def run():
         "ret3m",
         "ret6m",
         "ret12m",
+
         "relative_strength",
 
         "sma20",
@@ -331,14 +416,18 @@ def run():
 
         "atr_pct",
         "vol20",
+        "vol20_prev",
     ]
 
     for column in columns:
 
         if column not in df.columns:
+
             df[column] = np.nan
 
+    # ---------------------------------------------------------
     # MASTER TOP 30
+    # ---------------------------------------------------------
 
     df = df.sort_values(
         [
@@ -356,7 +445,9 @@ def run():
         index=False,
     )
 
-    # EARLY MOMENTUM
+    # ---------------------------------------------------------
+    # TOP 10 EARLY MOMENTUM
+    # ---------------------------------------------------------
 
     df.sort_values(
         "early_score",
@@ -369,7 +460,9 @@ def run():
         index=False,
     )
 
-    # VALUE + MOMENTUM
+    # ---------------------------------------------------------
+    # TOP 10 VALUE + MOMENTUM
+    # ---------------------------------------------------------
 
     df.sort_values(
         "final_score",
@@ -382,7 +475,9 @@ def run():
         index=False,
     )
 
-    # BREAKOUT READY
+    # ---------------------------------------------------------
+    # TOP 10 BREAKOUT READY
+    # ---------------------------------------------------------
 
     breakout = df[
         df["setup"].isin(
@@ -404,13 +499,37 @@ def run():
         index=False,
     )
 
+    # ---------------------------------------------------------
+    # TELEGRAM MESSAGE
+    # ---------------------------------------------------------
+
     create_telegram_message(
         df
     )
 
+    print("")
     print(
-        "Trading OS Value-Momentum "
-        "scan completed."
+        "======================================"
+    )
+    print(
+        "TRADING OS VALUE-MOMENTUM SCAN DONE"
+    )
+    print(
+        "======================================"
+    )
+    print(
+        f"Stocks processed : {len(df)}"
+    )
+    print(
+        f"Top score        : "
+        f"{df['final_score'].max():.1f}"
+    )
+    print(
+        f"Top stock        : "
+        f"{df.iloc[0]['symbol']}"
+    )
+    print(
+        "======================================"
     )
 
 
@@ -444,8 +563,10 @@ def create_telegram_message(df):
                 (
                     f"{rank}. "
                     f"{row['symbol']} | "
-                    f"Score {row['final_score']:.0f} | "
-                    f"Early {row['early_score']:.0f}"
+                    f"Score "
+                    f"{row['final_score']:.0f} | "
+                    f"Early "
+                    f"{row['early_score']:.0f}"
                 ),
 
                 (
