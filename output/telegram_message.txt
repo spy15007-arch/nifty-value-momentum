@@ -2,52 +2,52 @@
 
 Stocks processed: 99
 
-1. MOTHERSON | Score 69 | Early 55
-   Value 16/30 | Quality 9/20 | Momentum 34/35 | Base 5/15
-   Setup: REJECT | Sector 93
-   Price ₹157.03 | 6M 45.1% | 52W gap 9.4%
-
-2. GAIL | Score 68 | Early 72
+1. GAIL | Score 68 | Early 73
    Value 23/30 | Quality 9/20 | Momentum 23/35 | Base 10/15
-   Setup: REJECT | Sector 72
-   Price ₹171.22 | 6M 18.1% | 52W gap 5.8%
+   Setup: REJECT | Sector 76
+   Price ₹172.63 | 6M 12.9% | 52W gap 5.1%
 
-3. ZYDUSLIFE | Score 63 | Early 68
-   Value 14/30 | Quality 4/20 | Momentum 34/35 | Base 8/15
-   Setup: REJECT | Sector 80
-   Price ₹1145.70 | 6M 31.3% | 52W gap 7.0%
+2. MOTHERSON | Score 64 | Early 58
+   Value 15/30 | Quality 9/20 | Momentum 30/35 | Base 5/15
+   Setup: REJECT | Sector 98
+   Price ₹157.92 | 6M 33.9% | 52W gap 8.9%
 
-4. KOTAKBANK | Score 56 | Early 67
-   Value 15/30 | Quality 4/20 | Momentum 28/35 | Base 4/15
-   Setup: REJECT | Sector 97
-   Price ₹418.35 | 6M 15.5% | 52W gap 7.5%
+3. COALINDIA | Score 62 | Early 76
+   Value 27/30 | Quality 5/20 | Momentum 15/35 | Base 10/15
+   Setup: REJECT | Sector 82
+   Price ₹429.00 | 6M -2.0% | 52W gap 10.4%
 
-5. PNB | Score 55 | Early 48
-   Value 23/30 | Quality 6/20 | Momentum 18/35 | Base 3/15
-   Setup: REJECT | Sector 90
-   Price ₹109.57 | 6M 7.8% | 52W gap 16.6%
+4. ZYDUSLIFE | Score 60 | Early 65
+   Value 14/30 | Quality 4/20 | Momentum 34/35 | Base 5/15
+   Setup: REJECT | Sector 74
+   Price ₹1142.80 | 6M 28.3% | 52W gap 7.2%
 
-6. IDEA | Score 55 | Early 32
+5. PNB | Score 60 | Early 57
+   Value 23/30 | Quality 6/20 | Momentum 22/35 | Base 4/15
+   Setup: REJECT | Sector 96
+   Price ₹113.38 | 6M 5.0% | 52W gap 13.7%
+
+6. IDEA | Score 55 | Early 33
    Value 22/30 | Quality 0/20 | Momentum 35/35 | Base 3/15
-   Setup: REJECT | Sector 36
-   Price ₹12.64 | 6M 46.5% | 52W gap 19.9%
+   Setup: REJECT | Sector 43
+   Price ₹12.74 | 6M 38.5% | 52W gap 19.3%
 
-7. DIVISLAB | Score 54 | Early 56
+7. KOTAKBANK | Score 54 | Early 68
+   Value 13/30 | Quality 4/20 | Momentum 28/35 | Base 4/15
+   Setup: REJECT | Sector 99
+   Price ₹422.05 | 6M 11.2% | 52W gap 6.7%
+
+8. DIVISLAB | Score 54 | Early 55
    Value 1/30 | Quality 10/20 | Momentum 35/35 | Base 3/15
    Setup: REJECT | Sector 100
-   Price ₹9249.00 | 6M 59.5% | 52W gap 5.0%
+   Price ₹9197.50 | 6M 57.9% | 52W gap 5.6%
 
-8. BPCL | Score 54 | Early 53
-   Value 29/30 | Quality 3/20 | Momentum 12/35 | Base 7/15
-   Setup: REJECT | Sector 71
-   Price ₹300.60 | 6M 8.3% | 52W gap 23.2%
+9. JSWSTEEL | Score 54 | Early 53
+   Value 20/30 | Quality 6/20 | Momentum 19/35 | Base 6/15
+   Setup: REJECT | Sector 77
+   Price ₹1244.90 | 6M 4.8% | 52W gap 7.9%
 
-9. COALINDIA | Score 53 | Early 71
-   Value 27/30 | Quality 5/20 | Momentum 10/35 | Base 8/15
-   Setup: REJECT | Sector 79
-   Price ₹420.40 | 6M -6.8% | 52W gap 12.2%
-
-10. ETERNAL | Score 53 | Early 51
-   Value 5/30 | Quality 10/20 | Momentum 30/35 | Base 3/15
-   Setup: REJECT | Sector 99
-   Price ₹313.90 | 6M 35.3% | 52W gap 14.8%
+10. HINDZINC | Score 53 | Early 52
+   Value 17/30 | Quality 9/20 | Momentum 16/35 | Base 6/15
+   Setup: REJECT | Sector 90
+   Price ₹563.95 | 6M 2.7% | 52W gap 21.7%
