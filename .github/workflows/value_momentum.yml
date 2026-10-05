@@ -1,15 +1,19 @@
 name: Trading OS Value-Momentum
 
 on:
+
   workflow_dispatch:
 
   schedule:
 
-    # 09:45 IST
-    - cron: "15 4 * * 1-5"
+    # 14:15 IST = 08:45 UTC
+    # Monday-Friday
+    - cron: "45 8 * * 1-5"
 
-    # 15:15 IST
-    - cron: "45 9 * * 1-5"
+
+permissions:
+  contents: write
+
 
 jobs:
 
@@ -19,26 +23,97 @@ jobs:
 
     steps:
 
-      - name: Checkout
+      # -------------------------------------------------
+      # CHECKOUT
+      # -------------------------------------------------
+
+      - name: Checkout repository
+
         uses: actions/checkout@v4
 
+
+      # -------------------------------------------------
+      # PYTHON
+      # -------------------------------------------------
+
       - name: Setup Python
+
         uses: actions/setup-python@v5
 
         with:
           python-version: "3.11"
 
+
+      # -------------------------------------------------
+      # INSTALL
+      # -------------------------------------------------
+
       - name: Install requirements
+
         run: |
+
+          python -m pip install --upgrade pip
+
           pip install -r requirements.txt
 
-      - name: Run Value Momentum Scanner
+
+      # -------------------------------------------------
+      # RUN SCANNER
+      # -------------------------------------------------
+
+      - name: Run Value-Momentum Scanner
+
         run: |
+
           python run_value_momentum.py
 
-      - name: Upload results
+
+      # -------------------------------------------------
+      # SEND TELEGRAM
+      # -------------------------------------------------
+
+      - name: Send Telegram Message
+
+        env:
+
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+        run: |
+
+          python telegram_push.py
+
+
+      # -------------------------------------------------
+      # SAVE OUTPUT AS ARTIFACT
+      # -------------------------------------------------
+
+      - name: Upload scan results
+
         uses: actions/upload-artifact@v4
 
         with:
-          name: trading-os-value-momentum-output
+
+          name: value-momentum-results
+
           path: output/
+
+
+      # -------------------------------------------------
+      # COMMIT LATEST RESULTS
+      # -------------------------------------------------
+
+      - name: Commit latest results
+
+        run: |
+
+          git config user.name "Trading OS Bot"
+
+          git config user.email "trading-os-bot@users.noreply.github.com"
+
+          git add output/
+
+          git diff --cached --quiet || git commit -m "Update scanner results"
+
+          git push
