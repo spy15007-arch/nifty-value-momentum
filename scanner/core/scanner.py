@@ -381,20 +381,22 @@ def run():
     )
 
     # -----------------------------------------------------
+    # TECHNICAL SCORING
+    # -----------------------------------------------------
+    # Must happen before sector scoring because sector strength
+    # depends on the calculated relative_strength signal.
+
+    df = technical_scores(
+        df,
+        nifty_return_6m,
+    )
+
+    # -----------------------------------------------------
     # REAL SECTOR STRENGTH
     # -----------------------------------------------------
 
     df = calculate_sector_scores(
         df
-    )
-
-    # -----------------------------------------------------
-    # TECHNICAL SCORING
-    # -----------------------------------------------------
-
-    df = technical_scores(
-        df,
-        nifty_return_6m,
     )
 
     # -----------------------------------------------------
