@@ -324,6 +324,9 @@ def technical_scores(
         )
     )
 
+    # Ensure relative_strength is in the output dataframe
+    df["relative_strength"] = relative_strength
+
     # -----------------------------------------------------
     # MOMENTUM — 35 POINTS
     # -----------------------------------------------------
