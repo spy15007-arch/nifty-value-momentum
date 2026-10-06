@@ -35,16 +35,28 @@ def _get_csv(url):
     )
 
 
+def _normalise_columns(df):
+
+    df = df.copy()
+
+    df.columns = [
+        str(c).strip()
+        for c in df.columns
+    ]
+
+    return df
+
+
 def get_universe():
 
     try:
 
-        nifty50 = _get_csv(
-            NIFTY50_URL
+        nifty50 = _normalise_columns(
+            _get_csv(NIFTY50_URL)
         )
 
-        next50 = _get_csv(
-            NEXT50_URL
+        next50 = _normalise_columns(
+            _get_csv(NEXT50_URL)
         )
 
         frames = []
@@ -54,32 +66,53 @@ def get_universe():
             (next50, "NIFTYNEXT50"),
         ]:
 
-            symbol_column = (
-                "Symbol"
-                if "Symbol" in df.columns
-                else df.columns[2]
-            )
+            if "Symbol" not in df.columns:
+
+                raise ValueError(
+                    f"Symbol column missing from {index_name}"
+                )
+
+            if "Industry" in df.columns:
+
+                industry = (
+                    df["Industry"]
+                    .fillna("Unknown")
+                    .astype(str)
+                    .str.strip()
+                )
+
+            else:
+
+                industry = "Unknown"
 
             temp = pd.DataFrame(
                 {
                     "symbol": (
-                        df[symbol_column]
+                        df["Symbol"]
                         .astype(str)
                         .str.upper()
                         .str.strip()
                     ),
+
                     "index": index_name,
+
+                    "sector": industry,
                 }
             )
 
             frames.append(temp)
 
+        universe = pd.concat(
+            frames,
+            ignore_index=True,
+        )
+
         universe = (
-            pd.concat(
-                frames,
-                ignore_index=True,
+            universe
+            .drop_duplicates(
+                subset=["symbol"]
             )
-            .drop_duplicates("symbol")
+            .reset_index(drop=True)
         )
 
         universe["ticker"] = (
@@ -88,10 +121,16 @@ def get_universe():
 
         return universe
 
-    except Exception:
+    except Exception as error:
 
-        # Temporary fallback if the NSE
-        # constituent files are unavailable.
+        print(
+            "NSE universe download failed:",
+            error,
+        )
+
+        # Small emergency fallback.
+        # The normal scanner should use the
+        # current Nifty 50 + Next 50 files.
 
         symbols = [
             "RELIANCE",
@@ -118,13 +157,24 @@ def get_universe():
             "ADANIPORTS",
             "NTPC",
             "POWERGRID",
-            "TATASTEEL",
+            "BEL",
+            "TRENT",
         ]
 
         return pd.DataFrame(
             {
                 "symbol": symbols,
-                "index": ["FALLBACK"] * len(symbols),
+
+                "index": [
+                    "FALLBACK"
+                    for _ in symbols
+                ],
+
+                "sector": [
+                    "Unknown"
+                    for _ in symbols
+                ],
+
                 "ticker": [
                     symbol + ".NS"
                     for symbol in symbols
