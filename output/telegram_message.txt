@@ -7,8 +7,8 @@ Stocks processed: 99
    Setup: REJECT | Sector 77
    Price ₹172.08 | 6M 12.0% | 52W gap 5.4%
 
-2. MOTHERSON | Score 66 | Early 63
-   Value 15/30 | Quality 9/20 | Momentum 30/35 | Base 7/15
+2. MOTHERSON | Score 67 | Early 63
+   Value 16/30 | Quality 9/20 | Momentum 30/35 | Base 7/15
    Setup: REJECT | Sector 97
    Price ₹160.00 | 6M 31.2% | 52W gap 7.7%
 
@@ -32,22 +32,22 @@ Stocks processed: 99
    Setup: REJECT | Sector 99
    Price ₹431.90 | 6M 16.3% | 52W gap 4.5%
 
-7. JSWSTEEL | Score 55 | Early 60
+7. ETERNAL | Score 55 | Early 66
+   Value 5/30 | Quality 10/20 | Momentum 30/35 | Base 5/15
+   Setup: REJECT | Sector 98
+   Price ₹329.00 | 6M 37.0% | 52W gap 10.7%
+
+8. JSWSTEEL | Score 55 | Early 60
    Value 20/30 | Quality 6/20 | Momentum 17/35 | Base 9/15
    Setup: REJECT | Sector 79
    Price ₹1259.60 | 6M 4.3% | 52W gap 6.8%
 
-8. TECHM | Score 54 | Early 46
+9. TECHM | Score 54 | Early 46
    Value 18/30 | Quality 10/20 | Momentum 18/35 | Base 3/15
    Setup: REJECT | Sector 85
    Price ₹1504.50 | 6M 7.2% | 52W gap 16.7%
 
-9. IDEA | Score 54 | Early 28
+10. IDEA | Score 54 | Early 28
    Value 22/30 | Quality 0/20 | Momentum 34/35 | Base 3/15
    Setup: REJECT | Sector 41
    Price ₹13.21 | 6M 42.8% | 52W gap 16.3%
-
-10. ETERNAL | Score 53 | Early 66
-   Value 3/30 | Quality 10/20 | Momentum 30/35 | Base 5/15
-   Setup: REJECT | Sector 98
-   Price ₹329.00 | 6M 37.0% | 52W gap 10.7%
