@@ -1,53 +1,19 @@
-🚀 TRADING OS VALUE-MOMENTUM v1.0
+🚀 VALUE-MOMENTUM DAILY
+NIFTY 50 + NEXT 50
 
-Stocks processed: 99
+🔥 QUALIFIED SETUPS
 
-1. GAIL | Score 68 | Early 69
-   Value 23/30 | Quality 9/20 | Momentum 23/35 | Base 10/15
-   Setup: REJECT | Sector 77
-   Price ₹172.08 | 6M 12.0% | 52W gap 5.4%
+NO QUALIFIED BREAKOUT/
+PRE-BREAKOUT SETUPS TODAY.
 
-2. MOTHERSON | Score 67 | Early 63
-   Value 16/30 | Quality 9/20 | Momentum 30/35 | Base 7/15
-   Setup: REJECT | Sector 97
-   Price ₹160.00 | 6M 31.2% | 52W gap 7.7%
+This is a NO-TRADE signal.
 
-3. ZYDUSLIFE | Score 64 | Early 73
-   Value 14/30 | Quality 4/20 | Momentum 34/35 | Base 9/15
-   Setup: REJECT | Sector 76
-   Price ₹1159.50 | 6M 28.6% | 52W gap 5.9%
+👀 WATCH — DEVELOPING
 
-4. DIVISLAB | Score 61 | Early 68
-   Value 1/30 | Quality 10/20 | Momentum 35/35 | Base 10/15
-   Setup: REJECT | Sector 100
-   Price ₹9550.00 | 6M 61.1% | 52W gap 2.0%
+1. GAIL | Score 70 | Early 71 | Sector 40
 
-5. ADANIPORTS | Score 57 | Early 75
-   Value 11/30 | Quality 3/20 | Momentum 33/35 | Base 7/15
-   Setup: REJECT | Sector 71
-   Price ₹1783.40 | 6M 21.4% | 52W gap 5.7%
+❌ REJECT stocks hidden.
 
-6. KOTAKBANK | Score 57 | Early 73
-   Value 13/30 | Quality 4/20 | Momentum 29/35 | Base 6/15
-   Setup: REJECT | Sector 99
-   Price ₹431.90 | 6M 16.3% | 52W gap 4.5%
-
-7. ETERNAL | Score 55 | Early 66
-   Value 5/30 | Quality 10/20 | Momentum 30/35 | Base 5/15
-   Setup: REJECT | Sector 98
-   Price ₹329.00 | 6M 37.0% | 52W gap 10.7%
-
-8. JSWSTEEL | Score 55 | Early 60
-   Value 20/30 | Quality 6/20 | Momentum 17/35 | Base 9/15
-   Setup: REJECT | Sector 79
-   Price ₹1259.60 | 6M 4.3% | 52W gap 6.8%
-
-9. TECHM | Score 54 | Early 46
-   Value 18/30 | Quality 10/20 | Momentum 18/35 | Base 3/15
-   Setup: REJECT | Sector 85
-   Price ₹1504.50 | 6M 7.2% | 52W gap 16.7%
-
-10. IDEA | Score 54 | Early 28
-   Value 22/30 | Quality 0/20 | Momentum 34/35 | Base 3/15
-   Setup: REJECT | Sector 41
-   Price ₹13.21 | 6M 42.8% | 52W gap 16.3%
+System:
+Value + Quality + Momentum + Base
+→ wait for confirmation.
