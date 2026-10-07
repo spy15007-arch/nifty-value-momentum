@@ -10,9 +10,10 @@ This is a NO-TRADE signal.
 
 👀 WATCH — DEVELOPING
 
-1. GAIL | Score 70 | Early 69 | Sector 48
-2. KOTAKBANK | Score 70 | Early 86 | Sector 39
-3. PNB | Score 66 | Early 68 | Sector 39
+1. KOTAKBANK | Score 70 | Early 87 | Sector 39
+2. GAIL | Score 70 | Early 69 | Sector 48
+3. PNB | Score 67 | Early 70 | Sector 39
+4. COALINDIA | Score 65 | Early 57 | Sector 48
 
 ❌ REJECT stocks hidden.
 
