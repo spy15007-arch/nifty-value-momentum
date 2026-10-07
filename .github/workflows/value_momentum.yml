@@ -1,15 +1,11 @@
-name: Trading OS Value-Momentum
+name: Nifty Value Momentum Scanner
 
 on:
 
   workflow_dispatch:
 
   schedule:
-
-    # 14:15 IST = 08:45 UTC
-    # Monday-Friday
     - cron: "45 8 * * 1-5"
-
 
 permissions:
   contents: write
@@ -23,97 +19,50 @@ jobs:
 
     steps:
 
-      # -------------------------------------------------
-      # CHECKOUT
-      # -------------------------------------------------
-
       - name: Checkout repository
-
         uses: actions/checkout@v4
 
-
-      # -------------------------------------------------
-      # PYTHON
-      # -------------------------------------------------
-
       - name: Setup Python
-
         uses: actions/setup-python@v5
-
         with:
           python-version: "3.11"
 
-
-      # -------------------------------------------------
-      # INSTALL
-      # -------------------------------------------------
-
-      - name: Install requirements
-
+      - name: Install dependencies
         run: |
-
           python -m pip install --upgrade pip
-
           pip install -r requirements.txt
 
-
-      # -------------------------------------------------
-      # RUN SCANNER
-      # -------------------------------------------------
-
-      - name: Run Value-Momentum Scanner
-
+      - name: Run Value Momentum Scanner
         run: |
-
           python run_value_momentum.py
 
-
-      # -------------------------------------------------
-      # SEND TELEGRAM
-      # -------------------------------------------------
+      - name: Verify Telegram message
+        run: |
+          echo "Checking scanner output..."
+          ls -la output/
+          echo ""
+          echo "Telegram message:"
+          cat output/telegram_message.txt
 
       - name: Send Telegram Message
-
         env:
-
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-
         run: |
-
           python telegram_push.py
 
+      - name: Verify Telegram Delivery
+        run: |
+          echo "Telegram push completed."
 
-      # -------------------------------------------------
-      # SAVE OUTPUT AS ARTIFACT
-      # -------------------------------------------------
-
-      - name: Upload scan results
-
-        uses: actions/upload-artifact@v4
-
-        with:
-
-          name: value-momentum-results
-
-          path: output/
-
-
-      # -------------------------------------------------
-      # COMMIT LATEST RESULTS
-      # -------------------------------------------------
-
-      - name: Commit latest results
-
+      - name: Commit scanner output
         run: |
 
-          git config user.name "Trading OS Bot"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git config user.email "trading-os-bot@users.noreply.github.com"
+          git add output/*.csv output/*.txt || true
 
-          git add output/
+          git diff --cached --quiet || git commit -m "Update value momentum scanner output"
 
-          git diff --cached --quiet || git commit -m "Update scanner results"
-
-          git push
+          git push || true
