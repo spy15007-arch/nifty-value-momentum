@@ -20,6 +20,10 @@ from .scoring import (
 OUTPUT_DIR = Path("output")
 
 
+# =========================================================
+# HELPERS
+# =========================================================
+
 def _safe_float(value, default=0.0):
 
     try:
@@ -34,9 +38,26 @@ def _safe_float(value, default=0.0):
         return default
 
 
+# =========================================================
+# SECTOR STRENGTH
+# =========================================================
+
 def calculate_sector_scores(df):
 
     df = df.copy()
+
+    # -----------------------------------------------------
+    # Remove any existing sector_score.
+    #
+    # This prevents pandas from creating:
+    # sector_score_x / sector_score_y
+    # -----------------------------------------------------
+
+    if "sector_score" in df.columns:
+
+        df = df.drop(
+            columns=["sector_score"]
+        )
 
     if "sector" not in df.columns:
 
@@ -46,14 +67,37 @@ def calculate_sector_scores(df):
         df["sector"]
         .fillna("Unknown")
         .astype(str)
+        .str.strip()
     )
 
     # -----------------------------------------------------
-    # Sector performance
+    # Make sure required columns exist
+    # -----------------------------------------------------
+
+    for column in [
+        "ret3m",
+        "ret6m",
+        "relative_strength",
+    ]:
+
+        if column not in df.columns:
+
+            df[column] = 0.0
+
+        df[column] = pd.to_numeric(
+            df[column],
+            errors="coerce",
+        )
+
+    # -----------------------------------------------------
+    # Calculate sector statistics
     # -----------------------------------------------------
 
     sector_stats = (
-        df.groupby("sector")
+        df.groupby(
+            "sector",
+            dropna=False,
+        )
         .agg(
             sector_ret3m=(
                 "ret3m",
@@ -78,65 +122,142 @@ def calculate_sector_scores(df):
         .reset_index()
     )
 
-    # Require enough stocks for a useful
-    # sector signal.
+    # -----------------------------------------------------
+    # Percentile helper
+    # -----------------------------------------------------
+
+    def percentile(series):
+
+        series = pd.to_numeric(
+            series,
+            errors="coerce",
+        )
+
+        if series.notna().sum() <= 1:
+
+            return pd.Series(
+                50.0,
+                index=series.index,
+            )
+
+        result = (
+            series
+            .rank(
+                pct=True,
+                method="average",
+            )
+            * 100
+        )
+
+        return result.fillna(50.0)
+
+    # -----------------------------------------------------
+    # Sector components
+    #
+    # 30% = 3-month sector strength
+    # 40% = 6-month sector strength
+    # 30% = relative strength
+    # -----------------------------------------------------
+
+    sector_stats["score_3m"] = percentile(
+        sector_stats["sector_ret3m"]
+    )
+
+    sector_stats["score_6m"] = percentile(
+        sector_stats["sector_ret6m"]
+    )
+
+    sector_stats["score_rs"] = percentile(
+        sector_stats["sector_rs"]
+    )
+
+    sector_stats["sector_score"] = (
+
+        sector_stats["score_3m"] * 0.30
+
+        + sector_stats["score_6m"] * 0.40
+
+        + sector_stats["score_rs"] * 0.30
+
+    )
+
+    # -----------------------------------------------------
+    # Very small / unknown sectors
+    # -----------------------------------------------------
 
     sector_stats.loc[
         sector_stats["sector_count"] < 2,
-        [
-            "sector_ret3m",
-            "sector_ret6m",
-            "sector_rs",
-        ],
-    ] = np.nan
+        "sector_score",
+    ] = 50.0
 
-    sector_stats[
-        "sector_score"
-    ] = (
-
-        sector_stats[
-            "sector_ret3m"
-        ].rank(
-            pct=True
-        ) * 30
-
-        +
-
-        sector_stats[
-            "sector_ret6m"
-        ].rank(
-            pct=True
-        ) * 40
-
-        +
-
-        sector_stats[
-            "sector_rs"
-        ].rank(
-            pct=True
-        ) * 30
-
-    ).fillna(50)
-
-    df = df.merge(
-        sector_stats[
-            [
-                "sector",
-                "sector_score",
-            ]
-        ],
-        on="sector",
-        how="left",
+    sector_stats["sector_score"] = (
+        sector_stats["sector_score"]
+        .fillna(50.0)
+        .clip(0, 100)
     )
 
+    # -----------------------------------------------------
+    # Merge sector score back
+    # -----------------------------------------------------
+
+    sector_scores = sector_stats[
+        [
+            "sector",
+            "sector_score",
+        ]
+    ].copy()
+
+    df = df.merge(
+        sector_scores,
+        on="sector",
+        how="left",
+        suffixes=(
+            "",
+            "_new",
+        ),
+    )
+
+    # -----------------------------------------------------
+    # Safety handling in case pandas creates
+    # sector_score_new
+    # -----------------------------------------------------
+
+    if "sector_score_new" in df.columns:
+
+        df["sector_score"] = (
+            df["sector_score_new"]
+            .fillna(50.0)
+        )
+
+        df = df.drop(
+            columns=[
+                "sector_score_new"
+            ]
+        )
+
+    elif "sector_score" not in df.columns:
+
+        df["sector_score"] = 50.0
+
+    # -----------------------------------------------------
+    # Final cleanup
+    # -----------------------------------------------------
+
     df["sector_score"] = (
-        df["sector_score"]
-        .fillna(50)
+        pd.to_numeric(
+            df["sector_score"],
+            errors="coerce",
+        )
+        .fillna(50.0)
         .clip(0, 100)
     )
 
     return df
 
+
+# =========================================================
+# MAIN SCANNER
+# =========================================================
 
 def run():
 
@@ -144,6 +265,10 @@ def run():
         parents=True,
         exist_ok=True,
     )
+
+    # -----------------------------------------------------
+    # LOAD NIFTY 50 + NEXT 50
+    # -----------------------------------------------------
 
     universe = get_universe()
 
@@ -156,6 +281,10 @@ def run():
         f"Universe loaded: {len(tickers)} stocks"
     )
 
+    # -----------------------------------------------------
+    # DOWNLOAD PRICE DATA
+    # -----------------------------------------------------
+
     data = download_prices(
         tickers
     )
@@ -165,7 +294,7 @@ def run():
     nifty_return_6m = 0.0
 
     # -----------------------------------------------------
-    # NIFTY BENCHMARK
+    # NIFTY 50 BENCHMARK
     # -----------------------------------------------------
 
     try:
@@ -185,28 +314,49 @@ def run():
             pd.MultiIndex,
         ):
 
-            nifty = nifty.xs(
-                "Close",
-                axis=1,
-                level=0,
-            )
+            try:
 
-            nifty = nifty.iloc[:, 0]
+                nifty = nifty.xs(
+                    "Close",
+                    axis=1,
+                    level=0,
+                )
+
+                nifty = nifty.iloc[
+                    :,
+                    0,
+                ]
+
+            except Exception:
+
+                nifty = nifty.iloc[
+                    :,
+                    0,
+                ]
 
         else:
 
-            nifty = (
-                nifty["Close"]
-                if "Close" in nifty
-                else nifty.iloc[:, 0]
-            )
+            if "Close" in nifty.columns:
+
+                nifty = nifty[
+                    "Close"
+                ]
+
+            else:
+
+                nifty = nifty.iloc[
+                    :,
+                    0,
+                ]
 
         nifty = nifty.dropna()
 
         if len(nifty) > 126:
 
             nifty_return_6m = float(
-                nifty.pct_change(126).iloc[-1]
+                nifty
+                .pct_change(126)
+                .iloc[-1]
             )
 
     except Exception as error:
@@ -217,7 +367,7 @@ def run():
         )
 
     # -----------------------------------------------------
-    # STOCK PROCESSING
+    # PROCESS EACH STOCK
     # -----------------------------------------------------
 
     processed = 0
@@ -227,6 +377,10 @@ def run():
         ticker = stock["ticker"]
 
         try:
+
+            # ---------------------------------------------
+            # PRICE SERIES
+            # ---------------------------------------------
 
             close = series_for(
                 data,
@@ -262,9 +416,17 @@ def run():
                 axis=1,
             ).dropna()
 
+            # ---------------------------------------------
+            # MINIMUM HISTORY
+            # ---------------------------------------------
+
             if len(price_df) < 220:
 
                 continue
+
+            # ---------------------------------------------
+            # TECHNICAL INDICATORS
+            # ---------------------------------------------
 
             ind = indicators(
                 price_df
@@ -274,13 +436,17 @@ def run():
 
                 continue
 
+            # ---------------------------------------------
+            # LATEST METRICS
+            # ---------------------------------------------
+
             metrics = latest_metrics(
                 ind
             )
 
-            # -------------------------------------------------
-            # REQUIRED SCORING DATA
-            # -------------------------------------------------
+            # ---------------------------------------------
+            # FIX vol20_prev
+            # ---------------------------------------------
 
             if "vol20_prev" in ind.columns:
 
@@ -290,7 +456,7 @@ def run():
                     ind[
                         "vol20_prev"
                     ].iloc[-1],
-                    0,
+                    0.0,
                 )
 
             else:
@@ -300,10 +466,14 @@ def run():
                 ] = _safe_float(
                     metrics.get(
                         "vol20",
-                        0,
+                        0.0,
                     ),
-                    0,
+                    0.0,
                 )
+
+            # ---------------------------------------------
+            # UNIVERSE INFORMATION
+            # ---------------------------------------------
 
             metrics.update(
                 {
@@ -324,20 +494,29 @@ def run():
                 }
             )
 
-            # -------------------------------------------------
-            # FUNDAMENTALS
-            # -------------------------------------------------
+            # ---------------------------------------------
+            # FUNDAMENTAL DATA
+            # ---------------------------------------------
 
-            fundamentals = (
-                get_fundamentals(
-                    ticker
+            try:
+
+                fundamentals = (
+                    get_fundamentals(
+                        ticker
+                    )
                 )
-            )
 
-            if fundamentals:
+                if fundamentals:
 
-                metrics.update(
-                    fundamentals
+                    metrics.update(
+                        fundamentals
+                    )
+
+            except Exception as error:
+
+                print(
+                    f"Fundamental data unavailable "
+                    f"for {ticker}: {error}"
                 )
 
             rows.append(
@@ -358,6 +537,10 @@ def run():
                 f"Skipping {ticker}: {error}"
             )
 
+    # -----------------------------------------------------
+    # BUILD DATAFRAME
+    # -----------------------------------------------------
+
     if not rows:
 
         raise RuntimeError(
@@ -373,7 +556,7 @@ def run():
     )
 
     # -----------------------------------------------------
-    # FUNDAMENTALS
+    # FUNDAMENTAL SCORING
     # -----------------------------------------------------
 
     df = score_fundamentals(
@@ -381,18 +564,7 @@ def run():
     )
 
     # -----------------------------------------------------
-    # TECHNICAL SCORING
-    # -----------------------------------------------------
-    # Must happen before sector scoring because sector strength
-    # depends on the calculated relative_strength signal.
-
-    df = technical_scores(
-        df,
-        nifty_return_6m,
-    )
-
-    # -----------------------------------------------------
-    # REAL SECTOR STRENGTH
+    # SECTOR STRENGTH
     # -----------------------------------------------------
 
     df = calculate_sector_scores(
@@ -400,7 +572,55 @@ def run():
     )
 
     # -----------------------------------------------------
-    # FINAL RANK
+    # TECHNICAL SCORING
+    # -----------------------------------------------------
+
+    df = technical_scores(
+        df,
+        nifty_return_6m,
+    )
+
+    # -----------------------------------------------------
+    # ENSURE FINAL SCORE EXISTS
+    # -----------------------------------------------------
+
+    if "final_score" not in df.columns:
+
+        df["final_score"] = (
+            df["overall_score"]
+            .fillna(0)
+        )
+
+    # -----------------------------------------------------
+    # CLEAN SCORE COLUMNS
+    # -----------------------------------------------------
+
+    for column in [
+        "final_score",
+        "early_score",
+        "value_score",
+        "quality_score",
+        "momentum_score",
+        "base_score",
+        "sector_score",
+    ]:
+
+        if column not in df.columns:
+
+            df[column] = 0.0
+
+        df[column] = pd.to_numeric(
+            df[column],
+            errors="coerce",
+        ).fillna(0.0)
+
+    # -----------------------------------------------------
+    # FINAL RANKING
+    #
+    # Score first.
+    # Early setup second.
+    # Momentum third.
+    # NOT alphabetical.
     # -----------------------------------------------------
 
     df = df.sort_values(
@@ -465,6 +685,7 @@ def run():
 
         "entry",
         "stop",
+
         "t1",
         "t2",
         "t3",
@@ -473,6 +694,8 @@ def run():
         "rr_t2",
         "rr_t3",
     ]
+
+    # Add missing columns safely.
 
     for column in columns:
 
@@ -484,9 +707,11 @@ def run():
     # MASTER TOP 30
     # -----------------------------------------------------
 
-    df[
+    master = df[
         columns
-    ].head(30).to_csv(
+    ].head(30)
+
+    master.to_csv(
         OUTPUT_DIR
         / "master_top30.csv",
         index=False,
@@ -494,6 +719,10 @@ def run():
 
     # -----------------------------------------------------
     # QUALIFIED SETUPS
+    #
+    # ONLY:
+    # BREAKOUT
+    # PRE-BREAKOUT
     # -----------------------------------------------------
 
     qualified = df[
@@ -573,7 +802,7 @@ def run():
     )
 
     # -----------------------------------------------------
-    # BREAKOUT
+    # CONFIRMED BREAKOUT
     # -----------------------------------------------------
 
     breakout = df[
@@ -600,15 +829,39 @@ def run():
         df
     )
 
+    # -----------------------------------------------------
+    # CONSOLE SUMMARY
+    # -----------------------------------------------------
+
+    qualified_count = len(
+        qualified
+    )
+
+    breakout_count = len(
+        breakout
+    )
+
+    pre_breakout_count = len(
+        df[
+            df["setup"]
+            == "PRE-BREAKOUT"
+        ]
+    )
+
+    watch_count = len(
+        df[
+            df["setup"]
+            == "WATCH"
+        ]
+    )
+
     print("")
     print(
         "======================================"
     )
-
     print(
         "VALUE-MOMENTUM SCANNER COMPLETE"
     )
-
     print(
         "======================================"
     )
@@ -618,25 +871,52 @@ def run():
     )
 
     print(
-        f"Qualified setups : {len(qualified)}"
+        f"Qualified setups : {qualified_count}"
     )
 
     print(
-        f"Top stock        : "
-        f"{df.iloc[0]['symbol']}"
+        f"Breakouts        : {breakout_count}"
     )
 
     print(
-        f"Top score        : "
-        f"{df.iloc[0]['final_score']:.1f}"
+        f"Pre-breakouts    : {pre_breakout_count}"
     )
+
+    print(
+        f"Watch candidates : {watch_count}"
+    )
+
+    if len(df) > 0:
+
+        print(
+            f"Top stock        : "
+            f"{df.iloc[0]['symbol']}"
+        )
+
+        print(
+            f"Top score        : "
+            f"{df.iloc[0]['final_score']:.1f}"
+        )
+
+        print(
+            f"Top setup        : "
+            f"{df.iloc[0]['setup']}"
+        )
 
     print(
         "======================================"
     )
 
 
+# =========================================================
+# TELEGRAM MESSAGE
+# =========================================================
+
 def create_telegram_message(df):
+
+    # -----------------------------------------------------
+    # QUALIFIED
+    # -----------------------------------------------------
 
     qualified = df[
         df["setup"].isin(
@@ -647,10 +927,18 @@ def create_telegram_message(df):
         )
     ].copy()
 
+    # -----------------------------------------------------
+    # WATCH
+    # -----------------------------------------------------
+
     watch = df[
         df["setup"]
         == "WATCH"
     ].copy()
+
+    # -----------------------------------------------------
+    # MESSAGE HEADER
+    # -----------------------------------------------------
 
     lines = [
 
@@ -666,7 +954,7 @@ def create_telegram_message(df):
     ]
 
     # -----------------------------------------------------
-    # QUALIFIED
+    # QUALIFIED SECTION
     # -----------------------------------------------------
 
     if qualified.empty:
@@ -701,8 +989,10 @@ def create_telegram_message(df):
                     ),
 
                     (
-                        f"Score {row['final_score']:.0f} | "
-                        f"Early {row['early_score']:.0f}"
+                        f"Score "
+                        f"{row['final_score']:.0f} | "
+                        f"Early "
+                        f"{row['early_score']:.0f}"
                     ),
 
                     (
@@ -752,7 +1042,7 @@ def create_telegram_message(df):
             )
 
     # -----------------------------------------------------
-    # WATCH
+    # WATCH SECTION
     # -----------------------------------------------------
 
     lines.extend(
@@ -791,12 +1081,16 @@ def create_telegram_message(df):
                 )
             )
 
+    # -----------------------------------------------------
+    # FOOTER
+    # -----------------------------------------------------
+
     lines.extend(
         [
             "",
             "❌ REJECT stocks hidden.",
             "",
-            "System philosophy:",
+            "System:",
             "Value + Quality + Momentum + Base",
             "→ wait for confirmation.",
         ]
@@ -806,6 +1100,10 @@ def create_telegram_message(df):
         lines
     )
 
+    # -----------------------------------------------------
+    # SAVE TELEGRAM MESSAGE
+    # -----------------------------------------------------
+
     (
         OUTPUT_DIR
         / "telegram_message.txt"
@@ -813,3 +1111,12 @@ def create_telegram_message(df):
         message,
         encoding="utf-8",
     )
+
+
+# =========================================================
+# DIRECT EXECUTION
+# =========================================================
+
+if __name__ == "__main__":
+
+    run()
