@@ -2,801 +2,1103 @@ import numpy as np
 import pandas as pd
 
 
-# =========================================================
-# HELPERS
-# =========================================================
-
-def _num(df, column, default=0.0):
-
+def _num(df, column, default=np.nan):
     if column not in df.columns:
-
-        return pd.Series(
-            default,
-            index=df.index,
-            dtype=float,
-        )
+        return pd.Series(default, index=df.index, dtype=float)
 
     return pd.to_numeric(
         df[column],
-        errors="coerce",
-    ).fillna(default)
+        errors="coerce"
+    )
 
 
-def _normalise(series, low=0, high=100):
-
-    series = pd.to_numeric(
+def _rank_score(series, higher=True):
+    s = pd.to_numeric(
         series,
-        errors="coerce",
+        errors="coerce"
     )
 
-    if series.notna().sum() <= 1:
-
+    if s.notna().sum() <= 1:
         return pd.Series(
             50.0,
-            index=series.index,
+            index=s.index
         )
-
-    minimum = series.quantile(0.10)
-    maximum = series.quantile(0.90)
-
-    if maximum <= minimum:
-
-        return pd.Series(
-            50.0,
-            index=series.index,
-        )
-
-    result = (
-        (series - minimum)
-        / (maximum - minimum)
-    )
 
     return (
-        result
-        .clip(0, 1)
-        * (high - low)
-        + low
-    )
-
-
-def _percentile_score(
-    series,
-    higher_is_better=True,
-):
-
-    score = (
-        pd.to_numeric(
-            series,
-            errors="coerce",
-        )
-        .rank(
+        s.rank(
             pct=True,
-            ascending=higher_is_better,
-        )
-        * 100
-    )
+            method="average",
+            ascending=higher
+        ) * 100
+    ).fillna(50.0)
 
-    return score.fillna(50)
+
+def _clip(series, low=0, high=100):
+    return pd.to_numeric(
+        series,
+        errors="coerce"
+    ).fillna(50.0).clip(
+        low,
+        high
+    )
 
 
 # =========================================================
-# FUNDAMENTAL SCORE
+# FUNDAMENTALS
 # =========================================================
 
 def score_fundamentals(df):
 
     df = df.copy()
 
-    # -----------------------------------------------------
-    # VALUE — 30 POINTS
-    # -----------------------------------------------------
-
-    pe = _num(
-        df,
-        "pe",
-        np.nan,
-    )
-
-    pb = _num(
-        df,
-        "pb",
-        np.nan,
-    )
-
-    ev_ebitda = _num(
-        df,
-        "ev_ebitda",
-        np.nan,
-    )
-
+    pe = _num(df, "pe")
+    pb = _num(df, "pb")
+    ev = _num(df, "ev_ebitda")
     earnings_yield = _num(
         df,
-        "earnings_yield",
-        np.nan,
+        "earnings_yield"
+    )
+    fcf_yield = _num(
+        df,
+        "fcf_yield"
     )
 
     value_parts = []
 
-    if pe.notna().any():
-
-        pe_clean = pe.where(
-            (pe > 0) & (pe < 100)
-        )
-
+    if pe.notna().sum():
         value_parts.append(
-            _percentile_score(
-                -pe_clean
+            _rank_score(
+                pe.where(
+                    (pe > 0) &
+                    (pe < 100)
+                ),
+                higher=False
             )
         )
 
-    if pb.notna().any():
-
-        pb_clean = pb.where(
-            (pb > 0) & (pb < 30)
-        )
-
+    if pb.notna().sum():
         value_parts.append(
-            _percentile_score(
-                -pb_clean
+            _rank_score(
+                pb.where(
+                    (pb > 0) &
+                    (pb < 30)
+                ),
+                higher=False
             )
         )
 
-    if ev_ebitda.notna().any():
-
-        ev_clean = ev_ebitda.where(
-            (ev_ebitda > 0)
-            & (ev_ebitda < 100)
-        )
-
+    if ev.notna().sum():
         value_parts.append(
-            _percentile_score(
-                -ev_clean
+            _rank_score(
+                ev.where(
+                    (ev > 0) &
+                    (ev < 100)
+                ),
+                higher=False
             )
         )
 
-    if earnings_yield.notna().any():
-
+    if earnings_yield.notna().sum():
         value_parts.append(
-            _percentile_score(
-                earnings_yield
+            _rank_score(
+                earnings_yield,
+                higher=True
+            )
+        )
+
+    if fcf_yield.notna().sum():
+        value_parts.append(
+            _rank_score(
+                fcf_yield,
+                higher=True
             )
         )
 
     if value_parts:
 
-        value_score = pd.concat(
+        value_raw = pd.concat(
             value_parts,
-            axis=1,
+            axis=1
         ).mean(axis=1)
 
     else:
 
-        # If fundamental data is unavailable,
-        # don't falsely call a stock "cheap".
-        value_score = pd.Series(
+        value_raw = pd.Series(
             50.0,
-            index=df.index,
+            index=df.index
         )
 
-    df["value_score"] = (
-        value_score
-        .clip(0, 100)
-        * 0.30
-    )
 
     # -----------------------------------------------------
-    # QUALITY — 20 POINTS
+    # QUALITY
     # -----------------------------------------------------
 
-    roe = _num(
-        df,
-        "roe",
-        np.nan,
-    )
-
-    roce = _num(
-        df,
-        "roce",
-        np.nan,
-    )
-
+    roe = _num(df, "roe")
+    roce = _num(df, "roce")
     debt_equity = _num(
         df,
-        "debt_to_equity",
-        np.nan,
+        "debt_equity"
     )
-
-    profit_margin = _num(
+    eps_growth = _num(
         df,
-        "profit_margin",
-        np.nan,
+        "eps_growth"
+    )
+    revenue_growth = _num(
+        df,
+        "revenue_growth"
     )
 
     quality_parts = []
 
-    if roe.notna().any():
+    for series in [
+        roe,
+        roce,
+        eps_growth,
+        revenue_growth
+    ]:
 
-        quality_parts.append(
-            _percentile_score(
-                roe
+        if series.notna().sum():
+
+            quality_parts.append(
+                _rank_score(
+                    series,
+                    higher=True
+                )
             )
-        )
 
-    if roce.notna().any():
-
-        quality_parts.append(
-            _percentile_score(
-                roce
-            )
-        )
-
-    if profit_margin.notna().any():
+    if debt_equity.notna().sum():
 
         quality_parts.append(
-            _percentile_score(
-                profit_margin
-            )
-        )
-
-    if debt_equity.notna().any():
-
-        debt_clean = debt_equity.where(
-            debt_equity >= 0
-        )
-
-        quality_parts.append(
-            _percentile_score(
-                -debt_clean
+            _rank_score(
+                debt_equity.where(
+                    debt_equity >= 0
+                ),
+                higher=False
             )
         )
 
     if quality_parts:
 
-        quality_score = pd.concat(
+        quality_raw = pd.concat(
             quality_parts,
-            axis=1,
+            axis=1
         ).mean(axis=1)
 
     else:
 
-        quality_score = pd.Series(
+        quality_raw = pd.Series(
             50.0,
-            index=df.index,
+            index=df.index
         )
 
-    df["quality_score"] = (
-        quality_score
-        .clip(0, 100)
-        * 0.20
+
+    # -----------------------------------------------------
+    # FUNDAMENTAL DATA COVERAGE
+    # -----------------------------------------------------
+
+    coverage = pd.concat(
+        [
+            pe.notna(),
+            pb.notna(),
+            ev.notna(),
+            earnings_yield.notna(),
+            fcf_yield.notna(),
+            roe.notna(),
+            roce.notna(),
+            debt_equity.notna(),
+            eps_growth.notna(),
+            revenue_growth.notna(),
+        ],
+        axis=1
+    ).sum(axis=1)
+
+    df["fundamental_coverage"] = coverage
+
+    # New weighting:
+    #
+    # VALUE   = 10
+    # QUALITY = 20
+
+    df["value_score"] = (
+        _clip(value_raw) * 0.10
     )
 
-    # -----------------------------------------------------
-    # PLACEHOLDER TOTAL
-    # -----------------------------------------------------
+    df["quality_score"] = (
+        _clip(quality_raw) * 0.20
+    )
 
     df["fundamental_score"] = (
-        df["value_score"]
-        + df["quality_score"]
+        df["value_score"] +
+        df["quality_score"]
     )
 
     return df
 
 
 # =========================================================
-# TECHNICAL / MOMENTUM SCORE
+# TECHNICAL / INSTITUTIONAL SCORING
 # =========================================================
 
 def technical_scores(
     df,
-    nifty_return_6m=0.0,
+    nifty_return_6m=0.0
 ):
 
     df = df.copy()
 
-    # -----------------------------------------------------
-    # RETURNS
-    # -----------------------------------------------------
-
-    ret1m = _num(
-        df,
-        "ret1m",
-    )
-
-    ret3m = _num(
-        df,
-        "ret3m",
-    )
-
-    ret6m = _num(
-        df,
-        "ret6m",
-    )
-
-    ret12m = _num(
-        df,
-        "ret12m",
-    )
-
-    relative_strength = (
-        _num(
-            df,
-            "relative_strength",
-        )
-    )
-
-    # Ensure relative_strength is in the output dataframe
-    df["relative_strength"] = relative_strength
-
-    # -----------------------------------------------------
-    # MOMENTUM — 35 POINTS
-    # -----------------------------------------------------
-
-    m1 = _percentile_score(
-        ret1m
-    )
-
-    m3 = _percentile_score(
-        ret3m
-    )
-
-    m6 = _percentile_score(
-        ret6m
-    )
-
-    m12 = _percentile_score(
-        ret12m
-    )
-
-    rs = _percentile_score(
-        relative_strength
-    )
-
-    momentum_raw = (
-        m1 * 0.10
-        + m3 * 0.20
-        + m6 * 0.30
-        + m12 * 0.15
-        + rs * 0.25
-    )
-
-    df["momentum_score"] = (
-        momentum_raw
-        * 0.35
-    )
-
-    # -----------------------------------------------------
-    # MOVING AVERAGE STRUCTURE
-    # -----------------------------------------------------
-
     price = _num(
         df,
         "price",
+        0
     )
 
     sma20 = _num(
         df,
         "sma20",
+        0
     )
 
     sma50 = _num(
         df,
         "sma50",
+        0
     )
 
     sma200 = _num(
         df,
         "sma200",
+        0
     )
 
-    trend_points = (
 
-        (price > sma200)
-        .astype(int)
+    ret1m = _num(
+        df,
+        "ret1m",
+        0
+    )
 
-        + (sma50 > sma200)
-        .astype(int)
+    ret3m = _num(
+        df,
+        "ret3m",
+        0
+    )
 
-        + (sma20 > sma50)
-        .astype(int)
+    ret6m = _num(
+        df,
+        "ret6m",
+        0
+    )
+
+    ret12m = _num(
+        df,
+        "ret12m",
+        0
+    )
+
+
+    # =====================================================
+    # RELATIVE STRENGTH
+    # =====================================================
+
+    df["relative_strength"] = (
+        ret6m -
+        float(nifty_return_6m)
+    )
+
+
+    # =====================================================
+    # TREND — 20 POINTS
+    # =====================================================
+
+    trend_alignment = (
+
+        (price > sma200).astype(int)
+
+        + (sma50 > sma200).astype(int)
+
+        + (sma20 > sma50).astype(int)
+
+        + (price > sma20).astype(int)
+
+    ) / 4.0 * 100
+
+
+    slope20 = (
+        price /
+        sma20.replace(
+            0,
+            np.nan
+        ) - 1
+    ).clip(
+        -0.10,
+        0.10
+    )
+
+
+    slope50 = (
+        sma20 /
+        sma50.replace(
+            0,
+            np.nan
+        ) - 1
+    ).clip(
+        -0.10,
+        0.10
+    )
+
+
+    trend_slope = (
+
+        ((slope20 + 0.10) / 0.20 * 50)
+
+        +
+
+        ((slope50 + 0.10) / 0.20 * 50)
 
     )
 
-    # -----------------------------------------------------
-    # DISTANCE FROM RESISTANCE
-    # -----------------------------------------------------
 
-    dist20res = _num(
+    trend_raw = (
+
+        trend_alignment * 0.70
+
+        +
+
+        trend_slope.clip(
+            0,
+            100
+        ) * 0.30
+
+    )
+
+
+    df["trend_raw"] = _clip(
+        trend_raw
+    )
+
+    df["trend_score"] = (
+        df["trend_raw"] * 0.20
+    )
+
+
+    # =====================================================
+    # MOMENTUM + RELATIVE STRENGTH — 25 POINTS
+    # =====================================================
+
+    m1 = _rank_score(
+        ret1m
+    )
+
+    m3 = _rank_score(
+        ret3m
+    )
+
+    m6 = _rank_score(
+        ret6m
+    )
+
+    m12 = _rank_score(
+        ret12m
+    )
+
+    rs = _rank_score(
+        df["relative_strength"]
+    )
+
+
+    momentum_raw = (
+
+        m1 * 0.10
+
+        + m3 * 0.20
+
+        + m6 * 0.30
+
+        + m12 * 0.15
+
+        + rs * 0.25
+
+    )
+
+
+    df["momentum_raw"] = _clip(
+        momentum_raw
+    )
+
+    df["momentum_score"] = (
+        df["momentum_raw"] * 0.25
+    )
+
+
+    # =====================================================
+    # STRUCTURE / BASE — 15 POINTS
+    # =====================================================
+
+    dist20 = _num(
         df,
         "dist20res",
+        0.10
     )
 
     dist52 = _num(
         df,
         "dist52",
+        0.20
     )
 
-    # -----------------------------------------------------
-    # VOLUME
-    # -----------------------------------------------------
+    atr = _num(
+        df,
+        "atr_pct",
+        0.02
+    ).clip(
+        0.005,
+        0.10
+    )
+
+    atr_old = _num(
+        df,
+        "atr_pct_20ago",
+        np.nan
+    )
+
+
+    resistance_score = (
+
+        100 -
+
+        (
+            dist20.abs().clip(
+                0,
+                0.12
+            ) / 0.12 * 100
+        )
+
+    ).clip(
+        0,
+        100
+    )
+
+
+    high52_score = (
+
+        100 -
+
+        (
+            dist52.clip(
+                0,
+                0.20
+            ) / 0.20 * 100
+        )
+
+    ).clip(
+        0,
+        100
+    )
+
+
+    volatility_score = (
+
+        100 -
+
+        (
+            (
+                atr - 0.012
+            ).clip(
+                0,
+                0.05
+            ) / 0.05 * 100
+        )
+
+    ).clip(
+        0,
+        100
+    )
+
+
+    contraction = np.where(
+
+        atr_old.notna(),
+
+        (
+            atr <=
+            atr_old * 1.10
+        ).astype(float) * 100,
+
+        60.0
+
+    )
+
+
+    base_raw = (
+
+        resistance_score * 0.40
+
+        + high52_score * 0.20
+
+        + volatility_score * 0.20
+
+        + pd.Series(
+            contraction,
+            index=df.index
+        ) * 0.20
+
+    )
+
+
+    df["base_raw_score"] = _clip(
+        base_raw
+    )
+
+    df["base_score"] = (
+        df["base_raw_score"] * 0.15
+    )
+
+
+    # =====================================================
+    # VOLUME / ACCUMULATION — 10 POINTS
+    # =====================================================
+
+    volume = _num(
+        df,
+        "volume",
+        0
+    )
 
     vol20 = _num(
         df,
         "vol20",
+        0
+    ).replace(
+        0,
+        np.nan
     )
+
+
+    volume_ratio = (
+
+        volume /
+        vol20
+
+    ).replace(
+        [np.inf, -np.inf],
+        np.nan
+    ).fillna(
+        1.0
+    )
+
+
+    df["volume_ratio"] = (
+        volume_ratio
+    )
+
 
     vol20_prev = _num(
         df,
         "vol20_prev",
+        np.nan
+    ).replace(
+        0,
+        np.nan
     )
 
-    volume_ratio = (
-        vol20
-        / vol20_prev.replace(
-            0,
-            np.nan,
-        )
+
+    vol20_trend = (
+
+        vol20 /
+        vol20_prev
+
     ).replace(
         [np.inf, -np.inf],
-        np.nan,
-    ).fillna(1.0)
-
-    # -----------------------------------------------------
-    # BASE / BREAKOUT — 15 POINTS
-    # -----------------------------------------------------
-
-    # Ideal pre-breakout:
-    # close near resistance,
-    # but not excessively extended.
-
-    resistance_proximity = (
-        1
-        - (
-            dist20res
-            .abs()
-            .clip(0, 0.15)
-            / 0.15
-        )
-    ) * 100
-
-    resistance_proximity = (
-        resistance_proximity
-        .clip(0, 100)
+        np.nan
+    ).fillna(
+        1.0
     )
 
-    # Avoid chasing stocks already far above
-    # their recent breakout zone.
 
-    extension_penalty = (
-        (
-            dist20res > 0.05
-        )
-        .astype(int)
-        * 25
+    df["vol20_trend"] = (
+        vol20_trend
     )
 
-    volume_score = (
+
+    volume_strength = (
+
         (
-            volume_ratio
-            .clip(0.5, 2.5)
-            - 0.5
-        )
-        / 2.0
-        * 100
+            volume_ratio - 0.60
+        ) / 1.40 * 100
+
     ).clip(
         0,
-        100,
+        100
     )
 
-    trend_score = (
-        trend_points
-        / 3
-        * 100
-    )
 
-    base_raw = (
-        resistance_proximity * 0.45
-        + volume_score * 0.20
-        + trend_score * 0.20
-        + _percentile_score(
-            -dist52
-        ) * 0.15
-    )
+    volume_trend = (
 
-    base_raw = (
-        base_raw
-        - extension_penalty
+        (
+            vol20_trend - 0.75
+        ) / 0.75 * 100
+
     ).clip(
         0,
-        100,
+        100
     )
 
-    df["base_score"] = (
-        base_raw
-        * 0.15
-    )
 
-    # -----------------------------------------------------
-    # BREAKOUT SCORE
-    # -----------------------------------------------------
+    volume_raw = (
 
-    breakout_signal = (
+        volume_strength * 0.70
 
-        (dist20res >= 0)
-        & (dist20res <= 0.03)
-        & (volume_ratio >= 1.20)
-        & (price > sma20)
-        & (price > sma50)
+        +
+
+        volume_trend * 0.30
 
     )
 
-    df["breakout_score"] = np.where(
-        breakout_signal,
-        100,
-        0,
+
+    df["volume_raw"] = _clip(
+        volume_raw
     )
 
-    # -----------------------------------------------------
-    # EARLY MOMENTUM
-    # -----------------------------------------------------
-
-    early_raw = (
-
-        momentum_raw * 0.55
-
-        + trend_score * 0.20
-
-        + resistance_proximity * 0.25
-
+    df["volume_score"] = (
+        df["volume_raw"] * 0.10
     )
 
-    df["early_score"] = (
-        early_raw
-        .clip(0, 100)
-    )
 
-    # -----------------------------------------------------
-    # BASE SCORE IN RAW 0-100 FORM
-    # -----------------------------------------------------
+    # =====================================================
+    # FINAL 100-POINT SCORE
+    # =====================================================
 
-    df["base_raw_score"] = (
-        base_raw
-    )
+    df["final_score_base"] = (
 
-    # -----------------------------------------------------
-    # SECTOR SCORE
-    #
-    # This is calculated later by scanner.py.
-    # -----------------------------------------------------
-
-    if "sector_score" not in df.columns:
-
-        df["sector_score"] = 50.0
-
-    # -----------------------------------------------------
-    # FINAL SCORE
-    #
-    # 30 value
-    # 20 quality
-    # 35 momentum
-    # 15 base
-    #
-    # Sector acts as confirmation rather
-    # than an additional 105th point.
-    # -----------------------------------------------------
-
-    df["overall_score"] = (
         df["value_score"]
+
         + df["quality_score"]
+
+        + df["trend_score"]
+
         + df["momentum_score"]
+
         + df["base_score"]
+
+        + df["volume_score"]
+
     ).clip(
         0,
-        100,
+        100
     )
 
-    # Sector confirmation
 
-    sector_penalty = np.where(
-        df["sector_score"] < 35,
-        5,
-        0,
-    )
+    # =====================================================
+    # SECTOR GATE
+    # =====================================================
 
-    sector_bonus = np.where(
-        df["sector_score"] >= 75,
-        2,
-        0,
-    )
-
-    df["final_score"] = (
-        df["overall_score"]
-        - sector_penalty
-        + sector_bonus
-    ).clip(
-        0,
-        100,
-    )
-
-    # -----------------------------------------------------
-    # SETUP CLASSIFICATION
-    # -----------------------------------------------------
-
-    strong_trend = (
-        (price > sma200)
-        & (sma50 > sma200)
-        & (sma20 > sma50)
-    )
-
-    close_to_resistance = (
-        dist20res >= -0.03
-    ) & (
-        dist20res <= 0.03
-    )
-
-    not_extended = (
-        dist20res <= 0.05
+    sector_score = _num(
+        df,
+        "sector_score",
+        50
     )
 
     sector_ok = (
-        df["sector_score"] >= 45
+        sector_score >= 45
     )
 
-    # Confirmed breakout
+
+    # =====================================================
+    # HARD QUALITY GATES
+    # =====================================================
+
+    strong_trend = (
+
+        (price > sma200)
+
+        & (sma50 > sma200)
+
+        & (sma20 > sma50)
+
+        & (price > sma20)
+
+    )
+
+
+    rs_positive = (
+        df["relative_strength"] > 0
+    )
+
+
+    momentum_ok = (
+        df["momentum_raw"] >= 55
+    )
+
+
+    trend_ok = (
+        df["trend_raw"] >= 70
+    )
+
+
+    fundamental_ok = (
+
+        (df["quality_score"] >= 9)
+
+        &
+
+        (df["fundamental_coverage"] >= 2)
+
+    )
+
+
+    # =====================================================
+    # BREAKOUT
+    # =====================================================
 
     breakout = (
 
-        (df["final_score"] >= 78)
+        strong_trend
 
-        & (df["momentum_score"] >= 23)
+        & rs_positive
 
-        & strong_trend
+        & momentum_ok
 
-        & (df["breakout_score"] >= 100)
+        & trend_ok
 
         & sector_ok
 
+        & fundamental_ok
+
+        & (dist20 <= 0.005)
+
+        & (dist20 >= -0.025)
+
+        & (volume_ratio >= 1.30)
+
+        & (df["final_score_base"] >= 72)
+
     )
 
-    # Pre-breakout
+
+    # =====================================================
+    # PRE-BREAKOUT
+    # =====================================================
 
     pre_breakout = (
 
-        (df["final_score"] >= 72)
+        strong_trend
 
-        & (df["momentum_score"] >= 22)
+        & rs_positive
 
-        & (df["base_raw_score"] >= 60)
+        & momentum_ok
 
-        & close_to_resistance
+        & trend_ok
 
-        & not_extended
+        & sector_ok
 
-        & strong_trend
+        & fundamental_ok
+
+        & (dist20 >= 0.0)
+
+        & (dist20 <= 0.03)
+
+        & (volume_ratio <= 1.35)
+
+        & (atr <= 0.045)
+
+        & (df["final_score_base"] >= 68)
+
+    )
+
+
+    # =====================================================
+    # WATCH
+    # =====================================================
+
+    watch = (
+
+        (df["final_score_base"] >= 62)
+
+        & (df["momentum_raw"] >= 50)
+
+        & (df["trend_raw"] >= 60)
 
         & sector_ok
 
     )
 
-    # Watch
 
-    watch = (
-
-        (df["final_score"] >= 65)
-
-        & (df["momentum_score"] >= 18)
-
-        & (df["sector_score"] >= 35)
-
+    df["breakout_signal"] = (
+        breakout
     )
 
+
     df["setup"] = np.select(
+
         [
             breakout,
             pre_breakout,
-            watch,
+            watch
         ],
+
         [
             "BREAKOUT",
             "PRE-BREAKOUT",
-            "WATCH",
+            "WATCH"
         ],
-        default="REJECT",
+
+        default="REJECT"
+
     )
 
-    # -----------------------------------------------------
-    # TRADE LEVELS
-    # -----------------------------------------------------
 
-    atr_pct = _num(
+    # =====================================================
+    # SECTOR ADJUSTMENT
+    # =====================================================
+
+    sector_adjustment = np.where(
+
+        sector_score >= 75,
+
+        2,
+
+        np.where(
+            sector_score < 30,
+            -4,
+            0
+        )
+
+    )
+
+
+    df["final_score"] = (
+
+        df["final_score_base"]
+
+        + sector_adjustment
+
+    ).clip(
+        0,
+        100
+    )
+
+
+    # =====================================================
+    # ENTRY RANGE
+    # =====================================================
+
+    resistance = _num(
         df,
-        "atr_pct",
-        0.02,
+        "high20",
+        price
     )
 
-    atr_pct = (
-        atr_pct
-        .clip(0.005, 0.08)
+
+    # PRE-BREAKOUT
+    pre_low = (
+        resistance * 0.995
     )
 
-    # Entry
+    pre_high = (
+        resistance * 1.010
+    )
 
-    df["entry"] = np.where(
+    pre_ideal = (
+        resistance * 1.002
+    )
+
+
+    # BREAKOUT
+    breakout_low = (
+        resistance * 0.995
+    )
+
+    breakout_high = (
+        resistance * 1.015
+    )
+
+    breakout_ideal = (
+        resistance * 1.005
+    )
+
+
+    df["entry_low"] = np.where(
 
         df["setup"] == "BREAKOUT",
 
-        price,
+        breakout_low,
 
-        price * (
-            1
-            + np.maximum(
-                0,
-                dist20res
-                .clip(-0.03, 0.03)
-            )
+        pre_low
+
+    )
+
+
+    df["entry_high"] = np.where(
+
+        df["setup"] == "BREAKOUT",
+
+        breakout_high,
+
+        pre_high
+
+    )
+
+
+    df["entry_ideal"] = np.where(
+
+        df["setup"] == "BREAKOUT",
+
+        breakout_ideal,
+
+        pre_ideal
+
+    )
+
+
+    # =====================================================
+    # CHASE PROTECTION
+    # =====================================================
+
+    chase = (
+        price > df["entry_high"]
+    )
+
+    df["chase"] = chase
+
+
+    df.loc[
+        chase &
+        df["setup"].isin(
+            [
+                "BREAKOUT",
+                "PRE-BREAKOUT"
+            ]
         ),
+        "setup"
+    ] = "WATCH"
+
+
+    # =====================================================
+    # STOP LOSS
+    # =====================================================
+
+    atr_value = (
+        atr * price
     )
 
-    # Stop
 
-    df["stop"] = (
-        price
-        * (
-            1
-            - (
-                atr_pct
-                * 1.5
-            )
-        )
+    structural_stop = (
+
+        resistance -
+
+        1.25 * atr_value
+
     )
 
-    # Risk
+
+    atr_stop = (
+
+        price -
+
+        1.50 * atr_value
+
+    )
+
+
+    stop = pd.concat(
+        [
+            structural_stop,
+            atr_stop
+        ],
+        axis=1
+    ).min(
+        axis=1
+    )
+
+
+    stop = stop.clip(
+
+        lower=price * 0.90,
+
+        upper=price * 0.995
+
+    )
+
+
+    df["stop"] = stop
+
+
+    # =====================================================
+    # FOUR TARGETS
+    # =====================================================
 
     risk = (
-        df["entry"]
+
+        df["entry_ideal"]
+
         - df["stop"]
+
     ).clip(
         lower=0.01
     )
 
-    # Targets
 
     df["t1"] = (
-        df["entry"]
+        df["entry_ideal"]
         + risk * 1.5
     )
 
     df["t2"] = (
-        df["entry"]
-        + risk * 2.0
+        df["entry_ideal"]
+        + risk * 2.5
     )
 
     df["t3"] = (
-        df["entry"]
-        + risk * 3.0
+        df["entry_ideal"]
+        + risk * 3.5
     )
 
-    df["rr_t1"] = (
-        (
-            df["t1"]
-            - df["entry"]
-        )
-        / risk
+    df["t4"] = (
+        df["entry_ideal"]
+        + risk * 5.0
     )
 
-    df["rr_t2"] = (
-        (
-            df["t2"]
-            - df["entry"]
+
+    for n in [
+        1,
+        2,
+        3,
+        4
+    ]:
+
+        df[f"rr_t{n}"] = (
+
+            (
+                df[f"t{n}"]
+                - df["entry_ideal"]
+            )
+
+            / risk
+
         )
-        / risk
+
+
+    # =====================================================
+    # EARLY SCORE
+    # =====================================================
+
+    df["early_score"] = (
+
+        df["momentum_raw"] * 0.45
+
+        + df["base_raw_score"] * 0.35
+
+        + df["trend_raw"] * 0.20
+
+    ).clip(
+        0,
+        100
     )
 
-    df["rr_t3"] = (
-        (
-            df["t3"]
-            - df["entry"]
-        )
-        / risk
+
+    df["overall_score"] = (
+        df["final_score"]
     )
+
 
     return df
