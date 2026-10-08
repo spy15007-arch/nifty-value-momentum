@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yfinance as yf
 
 from .universe import get_universe
 from .market_data import (
@@ -24,7 +25,10 @@ OUTPUT_DIR = Path("output")
 # HELPERS
 # =========================================================
 
-def _safe_float(value, default=0.0):
+def _safe_float(
+    value,
+    default=0.0
+):
 
     try:
 
@@ -39,267 +43,12 @@ def _safe_float(value, default=0.0):
 
 
 # =========================================================
-# SECTOR STRENGTH
+# NIFTY 6M BENCHMARK
 # =========================================================
 
-def calculate_sector_scores(df):
-
-    df = df.copy()
-
-    # -----------------------------------------------------
-    # Remove any existing sector_score.
-    #
-    # This prevents pandas from creating:
-    # sector_score_x / sector_score_y
-    # -----------------------------------------------------
-
-    if "sector_score" in df.columns:
-
-        df = df.drop(
-            columns=["sector_score"]
-        )
-
-    if "sector" not in df.columns:
-
-        df["sector"] = "Unknown"
-
-    df["sector"] = (
-        df["sector"]
-        .fillna("Unknown")
-        .astype(str)
-        .str.strip()
-    )
-
-    # -----------------------------------------------------
-    # Make sure required columns exist
-    # -----------------------------------------------------
-
-    for column in [
-        "ret3m",
-        "ret6m",
-        "relative_strength",
-    ]:
-
-        if column not in df.columns:
-
-            df[column] = 0.0
-
-        df[column] = pd.to_numeric(
-            df[column],
-            errors="coerce",
-        )
-
-    # -----------------------------------------------------
-    # Calculate sector statistics
-    # -----------------------------------------------------
-
-    sector_stats = (
-        df.groupby(
-            "sector",
-            dropna=False,
-        )
-        .agg(
-            sector_ret3m=(
-                "ret3m",
-                "mean",
-            ),
-
-            sector_ret6m=(
-                "ret6m",
-                "mean",
-            ),
-
-            sector_rs=(
-                "relative_strength",
-                "mean",
-            ),
-
-            sector_count=(
-                "symbol",
-                "count",
-            ),
-        )
-        .reset_index()
-    )
-
-    # -----------------------------------------------------
-    # Percentile helper
-    # -----------------------------------------------------
-
-    def percentile(series):
-
-        series = pd.to_numeric(
-            series,
-            errors="coerce",
-        )
-
-        if series.notna().sum() <= 1:
-
-            return pd.Series(
-                50.0,
-                index=series.index,
-            )
-
-        result = (
-            series
-            .rank(
-                pct=True,
-                method="average",
-            )
-            * 100
-        )
-
-        return result.fillna(50.0)
-
-    # -----------------------------------------------------
-    # Sector components
-    #
-    # 30% = 3-month sector strength
-    # 40% = 6-month sector strength
-    # 30% = relative strength
-    # -----------------------------------------------------
-
-    sector_stats["score_3m"] = percentile(
-        sector_stats["sector_ret3m"]
-    )
-
-    sector_stats["score_6m"] = percentile(
-        sector_stats["sector_ret6m"]
-    )
-
-    sector_stats["score_rs"] = percentile(
-        sector_stats["sector_rs"]
-    )
-
-    sector_stats["sector_score"] = (
-
-        sector_stats["score_3m"] * 0.30
-
-        + sector_stats["score_6m"] * 0.40
-
-        + sector_stats["score_rs"] * 0.30
-
-    )
-
-    # -----------------------------------------------------
-    # Very small / unknown sectors
-    # -----------------------------------------------------
-
-    sector_stats.loc[
-        sector_stats["sector_count"] < 2,
-        "sector_score",
-    ] = 50.0
-
-    sector_stats["sector_score"] = (
-        sector_stats["sector_score"]
-        .fillna(50.0)
-        .clip(0, 100)
-    )
-
-    # -----------------------------------------------------
-    # Merge sector score back
-    # -----------------------------------------------------
-
-    sector_scores = sector_stats[
-        [
-            "sector",
-            "sector_score",
-        ]
-    ].copy()
-
-    df = df.merge(
-        sector_scores,
-        on="sector",
-        how="left",
-        suffixes=(
-            "",
-            "_new",
-        ),
-    )
-
-    # -----------------------------------------------------
-    # Safety handling in case pandas creates
-    # sector_score_new
-    # -----------------------------------------------------
-
-    if "sector_score_new" in df.columns:
-
-        df["sector_score"] = (
-            df["sector_score_new"]
-            .fillna(50.0)
-        )
-
-        df = df.drop(
-            columns=[
-                "sector_score_new"
-            ]
-        )
-
-    elif "sector_score" not in df.columns:
-
-        df["sector_score"] = 50.0
-
-    # -----------------------------------------------------
-    # Final cleanup
-    # -----------------------------------------------------
-
-    df["sector_score"] = (
-        pd.to_numeric(
-            df["sector_score"],
-            errors="coerce",
-        )
-        .fillna(50.0)
-        .clip(0, 100)
-    )
-
-    return df
-
-
-# =========================================================
-# MAIN SCANNER
-# =========================================================
-
-def run():
-
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    # -----------------------------------------------------
-    # LOAD NIFTY 50 + NEXT 50
-    # -----------------------------------------------------
-
-    universe = get_universe()
-
-    tickers = (
-        universe["ticker"]
-        .tolist()
-    )
-
-    print(
-        f"Universe loaded: {len(tickers)} stocks"
-    )
-
-    # -----------------------------------------------------
-    # DOWNLOAD PRICE DATA
-    # -----------------------------------------------------
-
-    data = download_prices(
-        tickers
-    )
-
-    rows = []
-
-    nifty_return_6m = 0.0
-
-    # -----------------------------------------------------
-    # NIFTY 50 BENCHMARK
-    # -----------------------------------------------------
+def get_nifty_6m_return():
 
     try:
-
-        import yfinance as yf
 
         nifty = yf.download(
             "^NSEI",
@@ -311,100 +60,269 @@ def run():
 
         if isinstance(
             nifty.columns,
-            pd.MultiIndex,
+            pd.MultiIndex
         ):
 
-            try:
+            if "Close" in nifty.columns.get_level_values(0):
 
-                nifty = nifty.xs(
-                    "Close",
-                    axis=1,
-                    level=0,
+                close = (
+                    nifty
+                    .xs(
+                        "Close",
+                        axis=1,
+                        level=0
+                    )
+                    .iloc[:, 0]
                 )
 
-                nifty = nifty.iloc[
-                    :,
-                    0,
-                ]
+            else:
 
-            except Exception:
-
-                nifty = nifty.iloc[
-                    :,
-                    0,
-                ]
+                close = nifty.iloc[:, 0]
 
         else:
 
             if "Close" in nifty.columns:
 
-                nifty = nifty[
-                    "Close"
-                ]
+                close = nifty["Close"]
 
             else:
 
-                nifty = nifty.iloc[
-                    :,
-                    0,
-                ]
+                close = nifty.iloc[:, 0]
 
-        nifty = nifty.dropna()
 
-        if len(nifty) > 126:
-
-            nifty_return_6m = float(
-                nifty
-                .pct_change(126)
-                .iloc[-1]
+        close = (
+            pd.to_numeric(
+                close,
+                errors="coerce"
             )
+            .dropna()
+        )
+
+
+        if len(close) <= 126:
+
+            return 0.0
+
+
+        return float(
+            close.pct_change(126).iloc[-1]
+        )
+
 
     except Exception as error:
 
         print(
             "Nifty benchmark unavailable:",
-            error,
+            error
         )
 
-    # -----------------------------------------------------
-    # PROCESS EACH STOCK
-    # -----------------------------------------------------
+        return 0.0
 
-    processed = 0
+
+# =========================================================
+# SECTOR STRENGTH
+# =========================================================
+
+def calculate_sector_scores(df):
+
+    df = df.copy()
+
+
+    if "sector" not in df.columns:
+
+        df["sector"] = "Unknown"
+
+
+    df["sector"] = (
+        df["sector"]
+        .fillna("Unknown")
+        .astype(str)
+        .str.strip()
+    )
+
+
+    for column in [
+        "ret3m",
+        "ret6m",
+        "relative_strength",
+    ]:
+
+        if column not in df.columns:
+
+            df[column] = 0.0
+
+
+        df[column] = pd.to_numeric(
+            df[column],
+            errors="coerce"
+        ).fillna(0.0)
+
+
+    stats = (
+
+        df
+        .groupby(
+            "sector",
+            dropna=False
+        )
+        .agg(
+
+            sector_ret3m=(
+                "ret3m",
+                "mean"
+            ),
+
+            sector_ret6m=(
+                "ret6m",
+                "mean"
+            ),
+
+            sector_rs=(
+                "relative_strength",
+                "mean"
+            ),
+
+            sector_count=(
+                "symbol",
+                "count"
+            )
+
+        )
+        .reset_index()
+
+    )
+
+
+    def percentile(series):
+
+        series = pd.to_numeric(
+            series,
+            errors="coerce"
+        )
+
+
+        if series.notna().sum() <= 1:
+
+            return pd.Series(
+                50.0,
+                index=series.index
+            )
+
+
+        return (
+
+            series
+            .rank(
+                pct=True,
+                method="average"
+            )
+            * 100
+
+        ).fillna(50.0)
+
+
+    stats["score_3m"] = percentile(
+        stats["sector_ret3m"]
+    )
+
+    stats["score_6m"] = percentile(
+        stats["sector_ret6m"]
+    )
+
+    stats["score_rs"] = percentile(
+        stats["sector_rs"]
+    )
+
+
+    stats["sector_score"] = (
+
+        stats["score_3m"] * 0.30
+
+        + stats["score_6m"] * 0.40
+
+        + stats["score_rs"] * 0.30
+
+    )
+
+
+    stats.loc[
+        stats["sector_count"] < 2,
+        "sector_score"
+    ] = 50.0
+
+
+    stats["sector_score"] = (
+        stats["sector_score"]
+        .fillna(50.0)
+        .clip(0, 100)
+    )
+
+
+    return (
+
+        df
+        .drop(
+            columns=["sector_score"],
+            errors="ignore"
+        )
+        .merge(
+            stats[
+                [
+                    "sector",
+                    "sector_score"
+                ]
+            ],
+            on="sector",
+            how="left"
+        )
+
+    )
+
+
+# =========================================================
+# PROCESS STOCKS
+# =========================================================
+
+def process_stocks(
+    universe,
+    data,
+    nifty_return_6m
+):
+
+    rows = []
+
 
     for _, stock in universe.iterrows():
 
         ticker = stock["ticker"]
 
-        try:
 
-            # ---------------------------------------------
-            # PRICE SERIES
-            # ---------------------------------------------
+        try:
 
             close = series_for(
                 data,
                 ticker,
-                "Close",
+                "Close"
             )
 
             high = series_for(
                 data,
                 ticker,
-                "High",
+                "High"
             )
 
             low = series_for(
                 data,
                 ticker,
-                "Low",
+                "Low"
             )
 
             volume = series_for(
                 data,
                 ticker,
-                "Volume",
+                "Volume"
             )
+
 
             price_df = pd.concat(
                 {
@@ -413,90 +331,99 @@ def run():
                     "Low": low,
                     "Volume": volume,
                 },
-                axis=1,
+                axis=1
             ).dropna()
 
-            # ---------------------------------------------
-            # MINIMUM HISTORY
-            # ---------------------------------------------
 
-            if len(price_df) < 220:
+            # More robust than the old 220-day minimum.
+            if len(price_df) < 260:
 
                 continue
 
-            # ---------------------------------------------
-            # TECHNICAL INDICATORS
-            # ---------------------------------------------
 
             ind = indicators(
                 price_df
             )
 
+
             if ind is None:
 
                 continue
 
-            # ---------------------------------------------
-            # LATEST METRICS
-            # ---------------------------------------------
 
             metrics = latest_metrics(
                 ind
             )
 
-            # ---------------------------------------------
-            # FIX vol20_prev
-            # ---------------------------------------------
 
+            # Fix previous volume-history issue.
             if "vol20_prev" in ind.columns:
 
-                metrics[
-                    "vol20_prev"
-                ] = _safe_float(
-                    ind[
-                        "vol20_prev"
-                    ].iloc[-1],
-                    0.0,
+                metrics["vol20_prev"] = (
+                    _safe_float(
+                        ind[
+                            "vol20_prev"
+                        ].iloc[-1],
+                        metrics.get(
+                            "vol20",
+                            0
+                        )
+                    )
                 )
 
             else:
 
-                metrics[
-                    "vol20_prev"
-                ] = _safe_float(
+                metrics["vol20_prev"] = (
                     metrics.get(
                         "vol20",
-                        0.0,
-                    ),
-                    0.0,
+                        0
+                    )
                 )
 
-            # ---------------------------------------------
-            # UNIVERSE INFORMATION
-            # ---------------------------------------------
+
+            # -------------------------------------------------
+            # UNIVERSE DATA
+            # -------------------------------------------------
 
             metrics.update(
                 {
-                    "symbol": stock[
-                        "symbol"
-                    ],
+                    "symbol":
+                        stock["symbol"],
 
-                    "ticker": ticker,
+                    "ticker":
+                        ticker,
 
-                    "index": stock[
-                        "index"
-                    ],
+                    "index":
+                        stock["index"],
 
-                    "sector": stock.get(
-                        "sector",
-                        "Unknown",
-                    ),
+                    "sector":
+                        stock.get(
+                            "sector",
+                            "Unknown"
+                        ),
                 }
             )
 
-            # ---------------------------------------------
-            # FUNDAMENTAL DATA
-            # ---------------------------------------------
+
+            # -------------------------------------------------
+            # IMPORTANT:
+            # ACTUAL RELATIVE STRENGTH VS NIFTY
+            # -------------------------------------------------
+
+            metrics[
+                "relative_strength"
+            ] = (
+
+                metrics["ret6m"]
+
+                - nifty_return_6m
+
+            )
+
+
+            # -------------------------------------------------
+            # FUNDAMENTALS
+            # -------------------------------------------------
 
             try:
 
@@ -506,11 +433,13 @@ def run():
                     )
                 )
 
+
                 if fundamentals:
 
                     metrics.update(
                         fundamentals
                     )
+
 
             except Exception as error:
 
@@ -519,17 +448,11 @@ def run():
                     f"for {ticker}: {error}"
                 )
 
+
             rows.append(
                 metrics
             )
 
-            processed += 1
-
-            if processed % 10 == 0:
-
-                print(
-                    f"Processed {processed} stocks..."
-                )
 
         except Exception as error:
 
@@ -537,9 +460,369 @@ def run():
                 f"Skipping {ticker}: {error}"
             )
 
+
+    return rows
+
+
+# =========================================================
+# OUTPUT COLUMNS
+# =========================================================
+
+OUTPUT_COLUMNS = [
+
+    "rank",
+    "symbol",
+    "index",
+    "sector",
+
+    "price",
+
+    "final_score",
+    "early_score",
+
+    "value_score",
+    "quality_score",
+    "trend_score",
+    "momentum_score",
+    "base_score",
+    "volume_score",
+
+    "sector_score",
+    "fundamental_coverage",
+
+    "setup",
+    "chase",
+
+    "ret1m",
+    "ret3m",
+    "ret6m",
+    "ret12m",
+
+    "relative_strength",
+
+    "sma20",
+    "sma50",
+    "sma200",
+
+    "dist52",
+    "dist20res",
+
+    "atr_pct",
+    "volume_ratio",
+
+    "entry_low",
+    "entry_ideal",
+    "entry_high",
+
+    "stop",
+
+    "t1",
+    "t2",
+    "t3",
+    "t4",
+
+    "rr_t1",
+    "rr_t2",
+    "rr_t3",
+    "rr_t4",
+
+]
+
+
+# =========================================================
+# TELEGRAM MESSAGE
+# =========================================================
+
+def create_telegram_message(df):
+
+    qualified = (
+        df[
+            df["setup"].isin(
+                [
+                    "BREAKOUT",
+                    "PRE-BREAKOUT"
+                ]
+            )
+        ]
+        .copy()
+    )
+
+
+    watch = (
+        df[
+            df["setup"] == "WATCH"
+        ]
+        .copy()
+    )
+
+
+    lines = [
+
+        "🚀 VALUE-MOMENTUM INSTITUTIONAL",
+
+        "NIFTY 50 + NEXT 50",
+
+        "",
+
+        "🎯 ACTIONABLE SETUPS",
+
+        "",
+    ]
+
+
+    # =====================================================
+    # NO TRADE
+    # =====================================================
+
+    if qualified.empty:
+
+        lines.extend(
+            [
+
+                "NO HIGH-QUALITY SETUP TODAY.",
+
+                "",
+
+                "Market/stock conditions do not",
+                "justify a fresh trade.",
+
+                "",
+
+                "NO-TRADE IS A VALID SIGNAL.",
+
+                "",
+            ]
+        )
+
+
+    else:
+
+        # =================================================
+        # QUALIFIED STOCKS
+        # =================================================
+
+        for rank, (
+            _,
+            row
+        ) in enumerate(
+            qualified.head(8).iterrows(),
+            1
+        ):
+
+
+            icon = (
+
+                "🔥"
+
+                if row["setup"] ==
+                "BREAKOUT"
+
+                else
+
+                "⭐"
+
+            )
+
+
+            lines.extend(
+                [
+
+                    (
+                        f"{icon} #{rank} "
+                        f"{row['symbol']} — "
+                        f"{row['setup']}"
+                    ),
+
+                    (
+                        f"Score "
+                        f"{row['final_score']:.0f} | "
+                        f"Sector "
+                        f"{row['sector_score']:.0f}"
+                    ),
+
+                    (
+                        f"BUY RANGE "
+                        f"₹{row['entry_low']:.2f}"
+                        f"–"
+                        f"₹{row['entry_high']:.2f}"
+                    ),
+
+                    (
+                        f"Ideal "
+                        f"₹{row['entry_ideal']:.2f}"
+                        f" | SL "
+                        f"₹{row['stop']:.2f}"
+                    ),
+
+                    (
+                        f"T1 ₹{row['t1']:.2f}"
+                        f" | T2 ₹{row['t2']:.2f}"
+                    ),
+
+                    (
+                        f"T3 ₹{row['t3']:.2f}"
+                        f" | T4 ₹{row['t4']:.2f}"
+                    ),
+
+                    (
+                        f"R:R "
+                        f"1:{row['rr_t1']:.1f}"
+                        f" / "
+                        f"1:{row['rr_t2']:.1f}"
+                        f" / "
+                        f"1:{row['rr_t3']:.1f}"
+                        f" / "
+                        f"1:{row['rr_t4']:.1f}"
+                    ),
+
+                    "",
+                ]
+            )
+
+
+    # =====================================================
+    # WATCH
+    # =====================================================
+
+    if not watch.empty:
+
+        lines.extend(
+            [
+                "👀 WATCH",
+                "",
+            ]
+        )
+
+
+        for _, row in watch.head(5).iterrows():
+
+            lines.append(
+
+                (
+                    f"{row['symbol']} | "
+                    f"Score "
+                    f"{row['final_score']:.0f} | "
+                    f"Buy zone "
+                    f"₹{row['entry_low']:.2f}"
+                    f"–"
+                    f"₹{row['entry_high']:.2f}"
+                )
+
+            )
+
+
+        lines.append("")
+
+
+    # =====================================================
+    # FOOTER
+    # =====================================================
+
+    lines.extend(
+        [
+
+            (
+                f"Qualified: "
+                f"{len(qualified)}"
+                f" | Watch: "
+                f"{len(watch)}"
+            ),
+
+            "",
+
+            "Quality + Value + Trend + Momentum",
+
+            "Base + Volume + Relative Strength",
+
+            "",
+
+            "Fresh buying only inside the stated range.",
+
+            "Do not chase above the range.",
+
+        ]
+    )
+
+
+    message = "\n".join(
+        lines
+    )
+
+
+    (
+        OUTPUT_DIR /
+        "telegram_message.txt"
+    ).write_text(
+        message,
+        encoding="utf-8"
+    )
+
+
+# =========================================================
+# MAIN
+# =========================================================
+
+def run():
+
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+
     # -----------------------------------------------------
-    # BUILD DATAFRAME
+    # UNIVERSE
     # -----------------------------------------------------
+
+    universe = get_universe()
+
+
+    tickers = (
+        universe["ticker"]
+        .tolist()
+    )
+
+
+    print(
+        f"Universe loaded: "
+        f"{len(tickers)} stocks"
+    )
+
+
+    # -----------------------------------------------------
+    # PRICE DATA
+    # -----------------------------------------------------
+
+    data = download_prices(
+        tickers
+    )
+
+
+    # -----------------------------------------------------
+    # NIFTY BENCHMARK
+    # -----------------------------------------------------
+
+    nifty_return_6m = (
+        get_nifty_6m_return()
+    )
+
+
+    print(
+        f"Nifty 6M return: "
+        f"{nifty_return_6m * 100:.2f}%"
+    )
+
+
+    # -----------------------------------------------------
+    # PROCESS
+    # -----------------------------------------------------
+
+    rows = process_stocks(
+        universe,
+        data,
+        nifty_return_6m
+    )
+
 
     if not rows:
 
@@ -547,346 +830,285 @@ def run():
             "No stocks could be processed."
         )
 
+
     df = pd.DataFrame(
         rows
     )
 
+
     print(
-        f"Successfully processed: {len(df)} stocks"
+        f"Successfully processed: "
+        f"{len(df)} stocks"
     )
 
+
     # -----------------------------------------------------
-    # FUNDAMENTAL SCORING
+    # FUNDAMENTALS
     # -----------------------------------------------------
 
     df = score_fundamentals(
         df
     )
 
+
     # -----------------------------------------------------
-    # SECTOR STRENGTH
+    # SECTORS
     # -----------------------------------------------------
 
     df = calculate_sector_scores(
         df
     )
 
+
     # -----------------------------------------------------
-    # TECHNICAL SCORING
+    # TECHNICALS
     # -----------------------------------------------------
 
     df = technical_scores(
         df,
-        nifty_return_6m,
+        nifty_return_6m
     )
 
+
     # -----------------------------------------------------
-    # ENSURE FINAL SCORE EXISTS
+    # RANK
     # -----------------------------------------------------
 
-    if "final_score" not in df.columns:
-
-        df["final_score"] = (
-            df["overall_score"]
-            .fillna(0)
+    df = (
+        df
+        .sort_values(
+            [
+                "final_score",
+                "early_score",
+                "momentum_raw"
+            ],
+            ascending=False
         )
-
-    # -----------------------------------------------------
-    # CLEAN SCORE COLUMNS
-    # -----------------------------------------------------
-
-    for column in [
-        "final_score",
-        "early_score",
-        "value_score",
-        "quality_score",
-        "momentum_score",
-        "base_score",
-        "sector_score",
-    ]:
-
-        if column not in df.columns:
-
-            df[column] = 0.0
-
-        df[column] = pd.to_numeric(
-            df[column],
-            errors="coerce",
-        ).fillna(0.0)
-
-    # -----------------------------------------------------
-    # FINAL RANKING
-    #
-    # Score first.
-    # Early setup second.
-    # Momentum third.
-    # NOT alphabetical.
-    # -----------------------------------------------------
-
-    df = df.sort_values(
-        [
-            "final_score",
-            "early_score",
-            "momentum_score",
-        ],
-        ascending=False,
-    ).reset_index(
-        drop=True
+        .reset_index(
+            drop=True
+        )
     )
+
 
     df["rank"] = (
         df.index + 1
     )
 
+
     # -----------------------------------------------------
-    # OUTPUT COLUMNS
+    # SAFETY: OUTPUT COLUMNS
     # -----------------------------------------------------
 
-    columns = [
-
-        "rank",
-
-        "symbol",
-        "index",
-        "sector",
-
-        "price",
-
-        "final_score",
-        "early_score",
-
-        "value_score",
-        "quality_score",
-        "momentum_score",
-        "base_score",
-
-        "sector_score",
-
-        "setup",
-
-        "ret1m",
-        "ret3m",
-        "ret6m",
-        "ret12m",
-
-        "relative_strength",
-
-        "sma20",
-        "sma50",
-        "sma200",
-
-        "dist52",
-        "dist20res",
-
-        "atr_pct",
-
-        "vol20",
-        "vol20_prev",
-
-        "entry",
-        "stop",
-
-        "t1",
-        "t2",
-        "t3",
-
-        "rr_t1",
-        "rr_t2",
-        "rr_t3",
-    ]
-
-    # Add missing columns safely.
-
-    for column in columns:
+    for column in OUTPUT_COLUMNS:
 
         if column not in df.columns:
 
             df[column] = np.nan
 
+
     # -----------------------------------------------------
-    # MASTER TOP 30
+    # MASTER 30
     # -----------------------------------------------------
 
-    master = df[
-        columns
-    ].head(30)
+    df[
+        OUTPUT_COLUMNS
+    ].head(30).to_csv(
 
-    master.to_csv(
-        OUTPUT_DIR
-        / "master_top30.csv",
-        index=False,
+        OUTPUT_DIR /
+        "master_top30.csv",
+
+        index=False
     )
 
+
     # -----------------------------------------------------
-    # QUALIFIED SETUPS
-    #
-    # ONLY:
-    # BREAKOUT
-    # PRE-BREAKOUT
+    # QUALIFIED
     # -----------------------------------------------------
 
-    qualified = df[
-        df["setup"].isin(
+    qualified = (
+
+        df[
+            df["setup"].isin(
+                [
+                    "BREAKOUT",
+                    "PRE-BREAKOUT"
+                ]
+            )
+        ]
+        .sort_values(
             [
-                "BREAKOUT",
-                "PRE-BREAKOUT",
-            ]
+                "final_score",
+                "early_score"
+            ],
+            ascending=False
         )
-    ].copy()
-
-    qualified = qualified.sort_values(
-        [
-            "final_score",
-            "early_score",
-        ],
-        ascending=False,
     )
+
 
     qualified[
-        columns
+        OUTPUT_COLUMNS
     ].head(15).to_csv(
-        OUTPUT_DIR
-        / "qualified_setups.csv",
-        index=False,
+
+        OUTPUT_DIR /
+        "qualified_setups.csv",
+
+        index=False
     )
 
+
     # -----------------------------------------------------
-    # EARLY MOMENTUM
+    # EARLY
     # -----------------------------------------------------
 
-    early = df[
-        df["setup"].isin(
-            [
-                "PRE-BREAKOUT",
-                "WATCH",
-            ]
+    early = (
+
+        df[
+            df["setup"].isin(
+                [
+                    "PRE-BREAKOUT",
+                    "WATCH"
+                ]
+            )
+        ]
+        .sort_values(
+            "early_score",
+            ascending=False
         )
-    ].sort_values(
-        "early_score",
-        ascending=False,
     )
+
 
     early[
-        columns
+        OUTPUT_COLUMNS
     ].head(10).to_csv(
-        OUTPUT_DIR
-        / "top10_early_momentum.csv",
-        index=False,
+
+        OUTPUT_DIR /
+        "top10_early_momentum.csv",
+
+        index=False
     )
+
 
     # -----------------------------------------------------
     # VALUE + MOMENTUM
     # -----------------------------------------------------
 
     vm = df[
-        (
-            df["value_score"]
-            >= 18
-        )
+        (df["value_score"] >= 5.5)
+
         &
-        (
-            df["momentum_score"]
-            >= 20
-        )
+
+        (df["momentum_score"] >= 13.75)
+
+        &
+
+        (df["trend_score"] >= 14)
     ].sort_values(
         "final_score",
-        ascending=False,
+        ascending=False
     )
+
 
     vm[
-        columns
+        OUTPUT_COLUMNS
     ].head(10).to_csv(
-        OUTPUT_DIR
-        / "top10_value_momentum.csv",
-        index=False,
+
+        OUTPUT_DIR /
+        "top10_value_momentum.csv",
+
+        index=False
     )
 
+
     # -----------------------------------------------------
-    # CONFIRMED BREAKOUT
+    # BREAKOUT
     # -----------------------------------------------------
 
-    breakout = df[
-        df["setup"]
-        == "BREAKOUT"
-    ].sort_values(
-        "final_score",
-        ascending=False,
+    breakout = (
+
+        df[
+            df["setup"] ==
+            "BREAKOUT"
+        ]
+        .sort_values(
+            "final_score",
+            ascending=False
+        )
     )
+
 
     breakout[
-        columns
+        OUTPUT_COLUMNS
     ].head(10).to_csv(
-        OUTPUT_DIR
-        / "top10_breakout_ready.csv",
-        index=False,
+
+        OUTPUT_DIR /
+        "top10_breakout_ready.csv",
+
+        index=False
     )
 
+
     # -----------------------------------------------------
-    # TELEGRAM MESSAGE
+    # TELEGRAM
     # -----------------------------------------------------
 
     create_telegram_message(
         df
     )
 
+
     # -----------------------------------------------------
-    # CONSOLE SUMMARY
+    # CONSOLE
     # -----------------------------------------------------
-
-    qualified_count = len(
-        qualified
-    )
-
-    breakout_count = len(
-        breakout
-    )
-
-    pre_breakout_count = len(
-        df[
-            df["setup"]
-            == "PRE-BREAKOUT"
-        ]
-    )
-
-    watch_count = len(
-        df[
-            df["setup"]
-            == "WATCH"
-        ]
-    )
 
     print("")
     print(
         "======================================"
     )
+
     print(
-        "VALUE-MOMENTUM SCANNER COMPLETE"
+        "VALUE-MOMENTUM INSTITUTIONAL SCANNER"
     )
+
     print(
         "======================================"
     )
 
     print(
-        f"Stocks processed : {len(df)}"
+        f"Stocks processed : "
+        f"{len(df)}"
     )
 
     print(
-        f"Qualified setups : {qualified_count}"
+        f"Qualified setups : "
+        f"{len(qualified)}"
     )
 
     print(
-        f"Breakouts        : {breakout_count}"
+        f"Breakouts        : "
+        f"{(
+            df['setup'] ==
+            'BREAKOUT'
+        ).sum()}"
     )
 
     print(
-        f"Pre-breakouts    : {pre_breakout_count}"
+        f"Pre-breakouts    : "
+        f"{(
+            df['setup'] ==
+            'PRE-BREAKOUT'
+        ).sum()}"
     )
 
     print(
-        f"Watch candidates : {watch_count}"
+        f"Watch candidates : "
+        f"{(
+            df['setup'] ==
+            'WATCH'
+        ).sum()}"
     )
 
-    if len(df) > 0:
+
+    if not df.empty:
 
         print(
             f"Top stock        : "
@@ -903,219 +1125,11 @@ def run():
             f"{df.iloc[0]['setup']}"
         )
 
+
     print(
         "======================================"
     )
 
-
-# =========================================================
-# TELEGRAM MESSAGE
-# =========================================================
-
-def create_telegram_message(df):
-
-    # -----------------------------------------------------
-    # QUALIFIED
-    # -----------------------------------------------------
-
-    qualified = df[
-        df["setup"].isin(
-            [
-                "BREAKOUT",
-                "PRE-BREAKOUT",
-            ]
-        )
-    ].copy()
-
-    # -----------------------------------------------------
-    # WATCH
-    # -----------------------------------------------------
-
-    watch = df[
-        df["setup"]
-        == "WATCH"
-    ].copy()
-
-    # -----------------------------------------------------
-    # MESSAGE HEADER
-    # -----------------------------------------------------
-
-    lines = [
-
-        "🚀 VALUE-MOMENTUM DAILY",
-
-        "NIFTY 50 + NEXT 50",
-
-        "",
-
-        "🔥 QUALIFIED SETUPS",
-
-        "",
-    ]
-
-    # -----------------------------------------------------
-    # QUALIFIED SECTION
-    # -----------------------------------------------------
-
-    if qualified.empty:
-
-        lines.extend(
-            [
-                "NO QUALIFIED BREAKOUT/",
-                "PRE-BREAKOUT SETUPS TODAY.",
-                "",
-                "This is a NO-TRADE signal.",
-                "",
-            ]
-        )
-
-    else:
-
-        for rank, (
-            _,
-            row,
-        ) in enumerate(
-            qualified.head(10).iterrows(),
-            1,
-        ):
-
-            lines.extend(
-                [
-
-                    (
-                        f"#{rank} "
-                        f"{row['symbol']} | "
-                        f"{row['setup']}"
-                    ),
-
-                    (
-                        f"Score "
-                        f"{row['final_score']:.0f} | "
-                        f"Early "
-                        f"{row['early_score']:.0f}"
-                    ),
-
-                    (
-                        f"Value "
-                        f"{row['value_score']:.0f}/30 | "
-                        f"Quality "
-                        f"{row['quality_score']:.0f}/20"
-                    ),
-
-                    (
-                        f"Momentum "
-                        f"{row['momentum_score']:.0f}/35 | "
-                        f"Base "
-                        f"{row['base_score']:.0f}/15"
-                    ),
-
-                    (
-                        f"Sector "
-                        f"{row['sector_score']:.0f} | "
-                        f"6M "
-                        f"{row['ret6m'] * 100:.1f}%"
-                    ),
-
-                    (
-                        f"Entry ₹"
-                        f"{row['entry']:.2f} | "
-                        f"SL ₹"
-                        f"{row['stop']:.2f}"
-                    ),
-
-                    (
-                        f"T1 ₹"
-                        f"{row['t1']:.2f} | "
-                        f"T2 ₹"
-                        f"{row['t2']:.2f} | "
-                        f"T3 ₹"
-                        f"{row['t3']:.2f}"
-                    ),
-
-                    (
-                        f"R:R "
-                        f"{row['rr_t2']:.1f}"
-                    ),
-
-                    "",
-                ]
-            )
-
-    # -----------------------------------------------------
-    # WATCH SECTION
-    # -----------------------------------------------------
-
-    lines.extend(
-        [
-            "👀 WATCH — DEVELOPING",
-            "",
-        ]
-    )
-
-    if watch.empty:
-
-        lines.append(
-            "No watch candidates."
-        )
-
-    else:
-
-        for rank, (
-            _,
-            row,
-        ) in enumerate(
-            watch.head(5).iterrows(),
-            1,
-        ):
-
-            lines.append(
-                (
-                    f"{rank}. "
-                    f"{row['symbol']} | "
-                    f"Score "
-                    f"{row['final_score']:.0f} | "
-                    f"Early "
-                    f"{row['early_score']:.0f} | "
-                    f"Sector "
-                    f"{row['sector_score']:.0f}"
-                )
-            )
-
-    # -----------------------------------------------------
-    # FOOTER
-    # -----------------------------------------------------
-
-    lines.extend(
-        [
-            "",
-            "❌ REJECT stocks hidden.",
-            "",
-            "System:",
-            "Value + Quality + Momentum + Base",
-            "→ wait for confirmation.",
-        ]
-    )
-
-    message = "\n".join(
-        lines
-    )
-
-    # -----------------------------------------------------
-    # SAVE TELEGRAM MESSAGE
-    # -----------------------------------------------------
-
-    (
-        OUTPUT_DIR
-        / "telegram_message.txt"
-    ).write_text(
-        message,
-        encoding="utf-8",
-    )
-
-
-# =========================================================
-# DIRECT EXECUTION
-# =========================================================
 
 if __name__ == "__main__":
 
