@@ -1085,26 +1085,17 @@ def run():
 
     print(
         f"Breakouts        : "
-        f"{(
-            df['setup'] ==
-            'BREAKOUT'
-        ).sum()}"
+        f"{(df['setup'] == 'BREAKOUT').sum()}"
     )
 
     print(
         f"Pre-breakouts    : "
-        f"{(
-            df['setup'] ==
-            'PRE-BREAKOUT'
-        ).sum()}"
+        f"{(df['setup'] == 'PRE-BREAKOUT').sum()}"
     )
 
     print(
         f"Watch candidates : "
-        f"{(
-            df['setup'] ==
-            'WATCH'
-        ).sum()}"
+        f"{(df['setup'] == 'WATCH').sum()}"
     )
 
 
