@@ -9,118 +9,239 @@ def safe(value):
         if value is None:
             return None
 
-        if math.isnan(float(value)):
+        value = float(value)
+
+        if math.isnan(value):
             return None
 
-        return float(value)
+        return value
 
     except Exception:
+
         return None
 
 
 def get_fundamentals(ticker):
 
-    ticker_obj = yf.Ticker(ticker)
+    ticker_obj = yf.Ticker(
+        ticker
+    )
+
 
     try:
-        info = ticker_obj.info or {}
+
+        info = (
+            ticker_obj.info
+            or {}
+        )
+
     except Exception:
+
         info = {}
+
 
     def get(*names):
 
         for name in names:
 
-            if info.get(name) is not None:
-                return safe(info.get(name))
+            value = safe(
+                info.get(name)
+            )
+
+            if value is not None:
+
+                return value
 
         return None
 
-    market_cap = get("marketCap")
 
-    pe = get("trailingPE")
+    market_cap = get(
+        "marketCap"
+    )
 
-    pb = get("priceToBook")
+    pe = get(
+        "trailingPE"
+    )
 
-    ps = get("priceToSalesTrailing12Months")
+    pb = get(
+        "priceToBook"
+    )
 
-    ev_ebitda = get("enterpriseToEbitda")
+    ps = get(
+        "priceToSalesTrailing12Months"
+    )
 
-    roe = get("returnOnEquity")
+    ev_ebitda = get(
+        "enterpriseToEbitda"
+    )
 
-    roce = get("returnOnCapitalEmployed")
 
-    debt_equity = get("debtToEquity")
+    roe = get(
+        "returnOnEquity"
+    )
 
-    eps = get("trailingEps")
+    roce = get(
+        "returnOnCapitalEmployed"
+    )
 
-    eps_growth = get("earningsGrowth")
+    debt_equity = get(
+        "debtToEquity"
+    )
 
-    revenue_growth = get("revenueGrowth")
+    eps = get(
+        "trailingEps"
+    )
+
+    eps_growth = get(
+        "earningsGrowth"
+    )
+
+    revenue_growth = get(
+        "revenueGrowth"
+    )
+
+
+    # Yahoo can sometimes return D/E
+    # as a percentage-like number.
+
+    if (
+
+        debt_equity is not None
+
+        and
+
+        debt_equity > 5
+
+    ):
+
+        debt_equity /= 100.0
+
+
+    # -----------------------------------------------------
+    # FREE CASH FLOW
+    # -----------------------------------------------------
 
     fcf = None
 
+
     try:
 
-        cashflow = ticker_obj.cashflow
+        cashflow = (
+            ticker_obj.cashflow
+        )
 
-        if cashflow is not None and not cashflow.empty:
+
+        if (
+
+            cashflow is not None
+
+            and
+
+            not cashflow.empty
+
+        ):
 
             for name in [
+
                 "Free Cash Flow",
-                "FreeCashFlow",
+
+                "FreeCashFlow"
+
             ]:
 
                 if name in cashflow.index:
 
                     fcf = safe(
-                        cashflow.loc[name].iloc[0]
+                        cashflow
+                        .loc[name]
+                        .iloc[0]
                     )
 
                     break
 
+
     except Exception:
+
         pass
+
 
     fcf_yield = None
 
-    if fcf is not None and market_cap:
-        fcf_yield = fcf / market_cap
+
+    if (
+
+        fcf is not None
+
+        and
+
+        market_cap
+
+    ):
+
+        fcf_yield = (
+            fcf /
+            market_cap
+        )
+
 
     earnings_yield = None
 
-    if pe and pe > 0:
-        earnings_yield = 1 / pe
 
-    # yfinance may return D/E as a percentage-like value.
-    if debt_equity is not None and debt_equity > 5:
-        debt_equity = debt_equity / 100
+    if (
+
+        pe is not None
+
+        and
+
+        pe > 0
+
+    ):
+
+        earnings_yield = (
+            1 /
+            pe
+        )
+
 
     return {
 
-        "market_cap": market_cap,
+        "market_cap":
+            market_cap,
 
-        "pe": pe,
+        "pe":
+            pe,
 
-        "pb": pb,
+        "pb":
+            pb,
 
-        "ps": ps,
+        "ps":
+            ps,
 
-        "ev_ebitda": ev_ebitda,
+        "ev_ebitda":
+            ev_ebitda,
 
-        "roe": roe,
+        "roe":
+            roe,
 
-        "roce": roce,
+        "roce":
+            roce,
 
-        "debt_equity": debt_equity,
+        "debt_equity":
+            debt_equity,
 
-        "eps": eps,
+        "eps":
+            eps,
 
-        "eps_growth": eps_growth,
+        "eps_growth":
+            eps_growth,
 
-        "revenue_growth": revenue_growth,
+        "revenue_growth":
+            revenue_growth,
 
-        "fcf_yield": fcf_yield,
+        "fcf_yield":
+            fcf_yield,
 
-        "earnings_yield": earnings_yield,
+        "earnings_yield":
+            earnings_yield,
+
     }
