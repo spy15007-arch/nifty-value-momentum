@@ -560,7 +560,7 @@ def create_telegram_message(df):
 
         "🚀 VALUE-MOMENTUM INSTITUTIONAL",
 
-        "NIFTY 50 + NEXT 50",
+        "NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250",
 
         "",
 
@@ -894,6 +894,56 @@ def run():
         df.index + 1
     )
 
+    # Explain why each processed stock did or did not qualify.
+    def _diagnostic_reason(row):
+        reasons = []
+        try:
+            price = float(row.get("price", 0) or 0)
+            sma20 = float(row.get("sma20", 0) or 0)
+            sma50 = float(row.get("sma50", 0) or 0)
+            sma200 = float(row.get("sma200", 0) or 0)
+            if not (price > sma200 > 0):
+                reasons.append("Price not above 200-day average")
+            if not (sma50 > sma200 > 0):
+                reasons.append("50-day average not above 200-day average")
+            if not (sma20 > sma50 > 0):
+                reasons.append("20-day average not above 50-day average")
+            if float(row.get("relative_strength", 0) or 0) <= 0:
+                reasons.append("6-month relative strength versus Nifty is not positive")
+            if float(row.get("momentum_raw", 0) or 0) < 55:
+                reasons.append("Momentum score below 55")
+            if float(row.get("trend_raw", 0) or 0) < 70:
+                reasons.append("Trend score below 70")
+            if float(row.get("sector_score", 50) or 0) < 45:
+                reasons.append("Sector score below 45")
+            if bool(row.get("chase", False)):
+                reasons.append("Price above calculated buy range; do not chase")
+            setup = str(row.get("setup", "REJECT"))
+            if not reasons and setup == "REJECT":
+                reasons.append("Failed combined setup rules; inspect the metrics")
+            elif not reasons and setup == "WATCH":
+                reasons.append("Watchlist only; wait for confirmation")
+            elif not reasons:
+                reasons.append("Passed key qualification checks")
+        except Exception as error:
+            reasons.append(f"Diagnostic calculation issue: {error}")
+        return "; ".join(reasons)
+
+    df["diagnostic_reason"] = df.apply(_diagnostic_reason, axis=1)
+    diagnostic_columns = [
+        col for col in [
+            "rank", "symbol", "ticker", "index", "sector", "price",
+            "final_score", "early_score", "setup", "trend_raw",
+            "momentum_raw", "relative_strength", "sector_score",
+            "quality_score", "fundamental_coverage", "dist20res",
+            "volume_ratio", "chase", "diagnostic_reason",
+        ] if col in df.columns
+    ]
+    df[diagnostic_columns].to_csv(
+        OUTPUT_DIR / "qualification_diagnostics.csv",
+        index=False,
+    )
+    print("Diagnostic report saved: output/qualification_diagnostics.csv")
 
     # -----------------------------------------------------
     # SAFETY: OUTPUT COLUMNS
