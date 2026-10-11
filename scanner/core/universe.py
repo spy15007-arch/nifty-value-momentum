@@ -9,6 +9,8 @@ INDEX_URLS = {
     "NIFTYSMALLCAP250": "https://www.niftyindices.com/IndexConstituent/ind_niftysmallcap250list.csv",
 }
 
+INVALID_PLACEHOLDER_SYMBOLS = {"DUMMYHEG"}
+
 FALLBACK = [
     "RELIANCE", "TCS", "HDFCBANK", "ICICIBANK", "INFY", "ITC",
     "HINDUNILVR", "LT", "SBIN", "BHARTIARTL", "KOTAKBANK",
@@ -60,6 +62,7 @@ def get_universe():
             })
             part = part[
                 part["symbol"].str.fullmatch(r"[A-Z0-9&.-]+", na=False)
+                & ~part["symbol"].isin(INVALID_PLACEHOLDER_SYMBOLS)
             ]
             frames.append(part)
             print(f"Universe source {name}: {len(part)} stocks loaded")
