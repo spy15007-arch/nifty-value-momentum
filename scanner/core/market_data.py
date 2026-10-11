@@ -147,6 +147,15 @@ def indicators(df):
     x["atr_pct"] = x["atr14"] / close
     x["atr_pct_20ago"] = x["atr_pct"].shift(20)
     x["vol20_prev"] = x["vol20"].shift(20)
+
+    # Liquidity and compact-base measurements used by the quality filters.
+    x["avg_traded_value_20d"] = (close * volume).rolling(20).mean()
+    x["range10_pct"] = (
+        high.rolling(10).max() - low.rolling(10).min()
+    ) / close
+    x["range20_pct"] = (
+        high.rolling(20).max() - low.rolling(20).min()
+    ) / close
     return x
 
 
@@ -178,4 +187,19 @@ def latest_metrics(x):
         "dist52": float(row["dist52"]),
         "dist20res": float(row["dist20res"]),
         "high20": float(row["high20"]),
+        "avg_traded_value_20d": (
+            float(row["avg_traded_value_20d"])
+            if pd.notna(row["avg_traded_value_20d"])
+            else 0.0
+        ),
+        "range10_pct": (
+            float(row["range10_pct"])
+            if pd.notna(row["range10_pct"])
+            else np.nan
+        ),
+        "range20_pct": (
+            float(row["range20_pct"])
+            if pd.notna(row["range20_pct"])
+            else np.nan
+        ),
     }
