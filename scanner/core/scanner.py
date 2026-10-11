@@ -478,6 +478,9 @@ OUTPUT_COLUMNS = [
     "price",
 
     "final_score",
+    "ranking_score",
+    "entry_readiness_score",
+    "entry_ready",
     "early_score",
 
     "value_score",
@@ -489,6 +492,12 @@ OUTPUT_COLUMNS = [
 
     "sector_score",
     "fundamental_coverage",
+    "quality_coverage",
+    "avg_traded_value_20d",
+    "range10_pct",
+    "range20_pct",
+    "liquidity_ok",
+    "not_yet_in_range",
 
     "setup",
     "chase",
@@ -878,6 +887,7 @@ def run():
         df
         .sort_values(
             [
+                "ranking_score",
                 "final_score",
                 "early_score",
                 "momentum_raw"
@@ -918,6 +928,12 @@ def run():
                 reasons.append("Sector score below 45")
             if bool(row.get("chase", False)):
                 reasons.append("Price above calculated buy range; do not chase")
+            if bool(row.get("not_yet_in_range", False)):
+                reasons.append("Setup is early; wait until price enters the planned buy range")
+            if not bool(row.get("liquidity_ok", False)):
+                reasons.append("Average daily traded value below ₹1 crore")
+            if int(row.get("quality_coverage", 0) or 0) < 2:
+                reasons.append("Insufficient reliable quality-fundamental data")
             setup = str(row.get("setup", "REJECT"))
             if not reasons and setup == "REJECT":
                 reasons.append("Failed combined setup rules; inspect the metrics")
@@ -935,8 +951,12 @@ def run():
             "rank", "symbol", "ticker", "index", "sector", "price",
             "final_score", "early_score", "setup", "trend_raw",
             "momentum_raw", "relative_strength", "sector_score",
-            "quality_score", "fundamental_coverage", "dist20res",
-            "volume_ratio", "chase", "diagnostic_reason",
+            "quality_score", "fundamental_coverage", "quality_coverage",
+            "dist20res", "range10_pct", "range20_pct",
+            "avg_traded_value_20d", "liquidity_ok",
+            "volume_ratio", "chase", "not_yet_in_range",
+            "entry_ready", "entry_readiness_score", "ranking_score",
+            "diagnostic_reason",
         ] if col in df.columns
     ]
     df[diagnostic_columns].to_csv(
@@ -987,6 +1007,7 @@ def run():
         ]
         .sort_values(
             [
+                "ranking_score",
                 "final_score",
                 "early_score"
             ],
@@ -1053,7 +1074,7 @@ def run():
 
         (df["trend_score"] >= 14)
     ].sort_values(
-        "final_score",
+        "ranking_score",
         ascending=False
     )
 
@@ -1080,7 +1101,7 @@ def run():
             "BREAKOUT"
         ]
         .sort_values(
-            "final_score",
+            "ranking_score",
             ascending=False
         )
     )
