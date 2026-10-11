@@ -4,7 +4,7 @@ NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 🎯 ACTIONABLE SETUPS
 
 🔥 #1 CPPLUS — BREAKOUT
-Score 82 | Sector 79
+Score 81 | Sector 79
 BUY RANGE ₹4167.96–₹4251.73
 Ideal ₹4209.84 | SL ₹3903.33
 T1 ₹4669.62 | T2 ₹4976.13
@@ -12,7 +12,7 @@ T3 ₹5282.65 | T4 ₹5742.42
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 ⭐ #2 PTCIL — PRE-BREAKOUT
-Score 79 | Sector 79
+Score 77 | Sector 79
 BUY RANGE ₹24676.00–₹25048.00
 Ideal ₹24849.60 | SL ₹23331.25
 T1 ₹27127.12 | T2 ₹28645.47
@@ -37,13 +37,13 @@ R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 👀 WATCH
 
-CUPID | Score 78 | Buy zone ₹355.21–₹360.57
-CYIENT | Score 76 | Buy zone ₹1167.63–₹1185.23
-GESHIP | Score 74 | Buy zone ₹1575.09–₹1598.83
-STLTECH | Score 73 | Buy zone ₹1045.84–₹1061.61
-HFCL | Score 72 | Buy zone ₹274.53–₹278.67
+CYIENT | Score 75 | Buy zone ₹1167.63–₹1185.23
+PERSISTENT | Score 68 | Buy zone ₹5730.20–₹5816.59
+GESHIP | Score 75 | Buy zone ₹1575.09–₹1598.83
+CUPID | Score 76 | Buy zone ₹355.21–₹360.57
+COFORGE | Score 69 | Buy zone ₹1884.13–₹1912.54
 
-Qualified: 4 | Watch: 35
+Qualified: 4 | Watch: 34
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
