@@ -716,7 +716,7 @@ def create_telegram_message(df):
         )
 
 
-        for _, row in watch.head(5).iterrows():
+        for watch_rank, (_, row) in enumerate(watch.head(5).iterrows(), 1):
 
             current_price = float(row.get("price", 0) or 0)
             entry_low = float(row.get("entry_low", 0) or 0)
@@ -730,7 +730,7 @@ def create_telegram_message(df):
 
             lines.append(
                 (
-                    f"{row['symbol']} | {row['setup']} | "
+                    f"#{watch_rank} {row['symbol']} | {row['setup']} | "
                     f"Score {row['final_score']:.0f} | "
                     f"Price ₹{current_price:.2f} | {status} | "
                     f"Zone ₹{entry_low:.2f}–₹{entry_high:.2f}"
