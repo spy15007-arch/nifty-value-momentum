@@ -739,10 +739,6 @@ def create_telegram_message(df):
             lines.append("")
 
 
-        # Keep a clear visual gap between the last watch item and the footer.
-        if lines and lines[-1] == "":
-            pass
-
 
     # =====================================================
     # FOOTER
