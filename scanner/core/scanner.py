@@ -646,7 +646,7 @@ def create_telegram_message(df):
 
                     (
                         f"{icon} #{rank} "
-                        f"{row['symbol']} — "
+                        f"<b>{row['symbol']}</b> — "
                         f"{row['setup']}"
                     ),
 
@@ -730,15 +730,18 @@ def create_telegram_message(df):
 
             lines.append(
                 (
-                    f"#{watch_rank} {row['symbol']} | {row['setup']} | "
+                    f"#{watch_rank} <b>{row['symbol']}</b> | {row['setup']} | "
                     f"Score {row['final_score']:.0f} | "
                     f"Price ₹{current_price:.2f} | {status} | "
                     f"Zone ₹{entry_low:.2f}–₹{entry_high:.2f}"
                 )
             )
+            lines.append("")
 
 
-        lines.append("")
+        # Keep a clear visual gap between the last watch item and the footer.
+        if lines and lines[-1] == "":
+            pass
 
 
     # =====================================================
