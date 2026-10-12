@@ -50,6 +50,7 @@ def send_telegram(message):
             data={
                 "chat_id": chat_id,
                 "text": chunk,
+                "parse_mode": "HTML",
                 "disable_web_page_preview": True,
             },
             timeout=30,
