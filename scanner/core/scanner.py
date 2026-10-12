@@ -544,25 +544,33 @@ OUTPUT_COLUMNS = [
 
 def create_telegram_message(df):
 
-    qualified = (
-        df[
-            df["setup"].isin(
-                [
-                    "BREAKOUT",
-                    "PRE-BREAKOUT"
-                ]
-            )
-        ]
-        .copy()
-    )
+    setup_candidates = df[
+        df["setup"].isin(["BREAKOUT", "PRE-BREAKOUT"])
+    ].copy()
 
+    # Only show setups as actionable when the live price is inside the
+    # planned entry zone. Early/late candidates remain visible under WATCH.
+    entry_ready = setup_candidates.get(
+        "entry_ready", pd.Series(False, index=setup_candidates.index)
+    ).fillna(False).astype(bool)
+    qualified = setup_candidates[entry_ready].copy()
 
-    watch = (
-        df[
-            df["setup"] == "WATCH"
-        ]
-        .copy()
-    )
+    watch = df[
+        (df["setup"] == "WATCH")
+        | (
+            df["setup"].isin(["BREAKOUT", "PRE-BREAKOUT"])
+            & ~df.index.isin(qualified.index)
+        )
+    ].copy()
+
+    if "ranking_score" in qualified.columns:
+        qualified = qualified.sort_values(
+            ["ranking_score", "final_score"], ascending=False
+        )
+    if "ranking_score" in watch.columns:
+        watch = watch.sort_values(
+            ["ranking_score", "final_score"], ascending=False
+        )
 
 
     lines = [
@@ -650,6 +658,11 @@ def create_telegram_message(df):
                     ),
 
                     (
+                        f"PRICE ₹{row['price']:.2f} | "
+                        f"ENTRY STATUS: IN RANGE"
+                    ),
+
+                    (
                         f"BUY RANGE "
                         f"₹{row['entry_low']:.2f}"
                         f"–"
@@ -705,18 +718,23 @@ def create_telegram_message(df):
 
         for _, row in watch.head(5).iterrows():
 
+            current_price = float(row.get("price", 0) or 0)
+            entry_low = float(row.get("entry_low", 0) or 0)
+            entry_high = float(row.get("entry_high", 0) or 0)
+            if current_price < entry_low:
+                status = "WAIT BELOW ZONE"
+            elif current_price > entry_high:
+                status = "DO NOT CHASE"
+            else:
+                status = "IN RANGE; AWAIT SETUP CONFIRMATION"
+
             lines.append(
-
                 (
-                    f"{row['symbol']} | "
-                    f"Score "
-                    f"{row['final_score']:.0f} | "
-                    f"Buy zone "
-                    f"₹{row['entry_low']:.2f}"
-                    f"–"
-                    f"₹{row['entry_high']:.2f}"
+                    f"{row['symbol']} | {row['setup']} | "
+                    f"Score {row['final_score']:.0f} | "
+                    f"Price ₹{current_price:.2f} | {status} | "
+                    f"Zone ₹{entry_low:.2f}–₹{entry_high:.2f}"
                 )
-
             )
 
 
@@ -1004,6 +1022,7 @@ def run():
                     "PRE-BREAKOUT"
                 ]
             )
+            & df["entry_ready"].fillna(False).astype(bool)
         ]
         .sort_values(
             [
@@ -1097,8 +1116,8 @@ def run():
     breakout = (
 
         df[
-            df["setup"] ==
-            "BREAKOUT"
+            (df["setup"] == "BREAKOUT")
+            & df["entry_ready"].fillna(False).astype(bool)
         ]
         .sort_values(
             "ranking_score",
