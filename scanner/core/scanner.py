@@ -542,7 +542,68 @@ OUTPUT_COLUMNS = [
 # TELEGRAM MESSAGE
 # =========================================================
 
-def create_telegram_message(df):
+def calculate_market_sentiment(df):
+    """Estimate scan-time sentiment using Nifty 50 price action and stock breadth."""
+    breadth20 = None
+    breadth50 = None
+    if not df.empty and {"price", "sma20", "sma50"}.issubset(df.columns):
+        price = pd.to_numeric(df["price"], errors="coerce")
+        sma20 = pd.to_numeric(df["sma20"], errors="coerce")
+        sma50 = pd.to_numeric(df["sma50"], errors="coerce")
+        valid20 = price.notna() & sma20.notna() & (sma20 > 0)
+        valid50 = price.notna() & sma50.notna() & (sma50 > 0)
+        if valid20.any():
+            breadth20 = float((price[valid20] > sma20[valid20]).mean() * 100)
+        if valid50.any():
+            breadth50 = float((price[valid50] > sma50[valid50]).mean() * 100)
+
+    nifty_change = None
+    nifty_above20 = None
+    try:
+        nifty = yf.download(
+            "^NSEI", period="3mo", interval="1d",
+            auto_adjust=True, progress=False,
+        )
+        if nifty is not None and not nifty.empty:
+            if isinstance(nifty.columns, pd.MultiIndex):
+                if "Close" in nifty.columns.get_level_values(0):
+                    close = nifty.xs("Close", axis=1, level=0).iloc[:, 0]
+                elif "Close" in nifty.columns.get_level_values(1):
+                    close = nifty.xs("Close", axis=1, level=1).iloc[:, 0]
+                else:
+                    close = pd.Series(dtype=float)
+            else:
+                close = nifty["Close"] if "Close" in nifty.columns else pd.Series(dtype=float)
+            close = pd.to_numeric(close, errors="coerce").dropna()
+            if len(close) >= 2:
+                nifty_change = float(close.iloc[-1] / close.iloc[-2] - 1)
+            if len(close) >= 20:
+                nifty_above20 = bool(close.iloc[-1] > close.rolling(20).mean().iloc[-1])
+    except Exception as error:
+        print("Market sentiment data unavailable:", error)
+
+    if nifty_change is None or breadth20 is None or nifty_above20 is None:
+        return "UNAVAILABLE | Insufficient market data"
+
+    bullish = int(nifty_change >= 0) + int(nifty_above20) + int(breadth20 >= 55)
+    bearish = int(nifty_change < 0) + int(not nifty_above20) + int(breadth20 < 45)
+    if bullish >= 2 and bearish == 0:
+        label = "BULLISH"
+    elif bearish >= 2 and bullish == 0:
+        label = "BEARISH"
+    else:
+        label = "MIXED / NEUTRAL"
+
+    details = [
+        f"Nifty 50 {nifty_change * 100:+.2f}%",
+        f"Stocks above 20-DMA {breadth20:.0f}%",
+    ]
+    if breadth50 is not None:
+        details.append(f"above 50-DMA {breadth50:.0f}%")
+    return f"{label} | " + " | ".join(details)
+
+
+def create_telegram_message(df, market_sentiment="UNAVAILABLE | Not calculated"):
 
     setup_candidates = df[
         df["setup"].isin(["BREAKOUT", "PRE-BREAKOUT"])
@@ -579,6 +640,8 @@ def create_telegram_message(df):
 
         "NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250",
 
+        "",
+        f"📊 MARKET SENTIMENT: {market_sentiment}",
         "",
 
         "🎯 ACTIONABLE SETUPS",
@@ -1140,8 +1203,12 @@ def run():
     # TELEGRAM
     # -----------------------------------------------------
 
+    market_sentiment = calculate_market_sentiment(df)
+    print(f"Market sentiment: {market_sentiment}")
+
     create_telegram_message(
-        df
+        df,
+        market_sentiment=market_sentiment,
     )
 
 
