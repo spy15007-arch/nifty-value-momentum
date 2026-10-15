@@ -1,7 +1,7 @@
 🚀 VALUE-MOMENTUM INSTITUTIONAL
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 
-📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 +1.86% | Stocks above 20-DMA 32% | above 50-DMA 23%
+📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 +1.66% | Stocks above 20-DMA 31% | above 50-DMA 20%
 
 🎯 ACTIONABLE SETUPS
 
@@ -14,17 +14,17 @@ NO-TRADE IS A VALID SIGNAL.
 
 👀 WATCH
 
-#1 <b>SHYAMMETL</b> | WATCH | Score 74 | Price ₹1154.30 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹1142.26–₹1159.48
+#1 <b>SHYAMMETL</b> | WATCH | Score 75 | Price ₹1157.00 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹1142.26–₹1159.48
 
-#2 <b>LAURUSLABS</b> | PRE-BREAKOUT | Score 72 | Price ₹2026.50 | WAIT BELOW ZONE | Zone ₹2058.85–₹2089.89
+#2 <b>PETRONET</b> | PRE-BREAKOUT | Score 72 | Price ₹295.20 | WAIT BELOW ZONE | Zone ₹298.10–₹302.60
 
-#3 <b>INDHOTEL</b> | PRE-BREAKOUT | Score 68 | Price ₹747.15 | WAIT BELOW ZONE | Zone ₹751.23–₹762.55
+#3 <b>ECLERX</b> | PRE-BREAKOUT | Score 72 | Price ₹1998.20 | WAIT BELOW ZONE | Zone ₹2012.49–₹2042.83
 
-#4 <b>PETRONET</b> | PRE-BREAKOUT | Score 70 | Price ₹294.30 | WAIT BELOW ZONE | Zone ₹298.10–₹302.60
+#4 <b>COFORGE</b> | WATCH | Score 71 | Price ₹1934.30 | WAIT BELOW ZONE | Zone ₹1955.08–₹1984.55
 
-#5 <b>COFORGE</b> | WATCH | Score 69 | Price ₹1929.40 | WAIT BELOW ZONE | Zone ₹1955.08–₹1984.55
+#5 <b>INDHOTEL</b> | WATCH | Score 69 | Price ₹741.45 | WAIT BELOW ZONE | Zone ₹751.23–₹762.55
 
-Qualified: 0 | Watch: 35
+Qualified: 0 | Watch: 41
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
