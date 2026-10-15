@@ -1,32 +1,30 @@
 🚀 VALUE-MOMENTUM INSTITUTIONAL
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 
-📊 MARKET SENTIMENT: BEARISH | Nifty 50 -0.44% | Stocks above 20-DMA 34% | above 50-DMA 25%
+📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 +1.86% | Stocks above 20-DMA 32% | above 50-DMA 23%
 
 🎯 ACTIONABLE SETUPS
 
-🔥 #1 <b>CPPLUS</b> — BREAKOUT
-Score 81 | Sector 86
-PRICE ₹4440.30 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹4421.78–₹4510.66
-Ideal ₹4466.22 | SL ₹4114.64
-T1 ₹4993.59 | T2 ₹5345.17
-T3 ₹5696.75 | T4 ₹6224.12
-R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+NO HIGH-QUALITY SETUP TODAY.
+
+Market/stock conditions do not
+justify a fresh trade.
+
+NO-TRADE IS A VALID SIGNAL.
 
 👀 WATCH
 
-#1 <b>BHEL</b> | WATCH | Score 81 | Price ₹464.00 | DO NOT CHASE | Zone ₹453.67–₹462.79
+#1 <b>SHYAMMETL</b> | WATCH | Score 74 | Price ₹1154.30 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹1142.26–₹1159.48
 
-#2 <b>SHYAMMETL</b> | PRE-BREAKOUT | Score 76 | Price ₹1141.60 | WAIT BELOW ZONE | Zone ₹1142.26–₹1159.48
+#2 <b>LAURUSLABS</b> | PRE-BREAKOUT | Score 72 | Price ₹2026.50 | WAIT BELOW ZONE | Zone ₹2058.85–₹2089.89
 
-#3 <b>LAURUSLABS</b> | PRE-BREAKOUT | Score 73 | Price ₹2036.90 | WAIT BELOW ZONE | Zone ₹2058.85–₹2089.89
+#3 <b>INDHOTEL</b> | PRE-BREAKOUT | Score 68 | Price ₹747.15 | WAIT BELOW ZONE | Zone ₹751.23–₹762.55
 
-#4 <b>AEGISLOG</b> | WATCH | Score 79 | Price ₹1489.10 | WAIT BELOW ZONE | Zone ₹1521.06–₹1543.99
+#4 <b>PETRONET</b> | PRE-BREAKOUT | Score 70 | Price ₹294.30 | WAIT BELOW ZONE | Zone ₹298.10–₹302.60
 
-#5 <b>COFORGE</b> | WATCH | Score 71 | Price ₹1928.00 | WAIT BELOW ZONE | Zone ₹1933.78–₹1962.93
+#5 <b>COFORGE</b> | WATCH | Score 69 | Price ₹1929.40 | WAIT BELOW ZONE | Zone ₹1955.08–₹1984.55
 
-Qualified: 1 | Watch: 49
+Qualified: 0 | Watch: 35
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
