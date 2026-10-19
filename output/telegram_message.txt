@@ -1,41 +1,30 @@
 🚀 VALUE-MOMENTUM INSTITUTIONAL
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 
-📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 +0.65% | Stocks above 20-DMA 33% | above 50-DMA 22%
+📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -1.11% | Stocks above 20-DMA 26% | above 50-DMA 19%
 
 🎯 ACTIONABLE SETUPS
 
-⭐ #1 <b>LAURUSLABS</b> — PRE-BREAKOUT
-Score 75 | Sector 78
-PRICE ₹2060.10 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹2058.85–₹2089.89
-Ideal ₹2073.34 | SL ₹1984.59
-T1 ₹2206.47 | T2 ₹2295.22
-T3 ₹2383.97 | T4 ₹2517.10
-R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+NO HIGH-QUALITY SETUP TODAY.
 
-⭐ #2 <b>NYKAA</b> — PRE-BREAKOUT
-Score 68 | Sector 54
-PRICE ₹345.00 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹344.72–₹349.91
-Ideal ₹347.14 | SL ₹330.03
-T1 ₹372.82 | T2 ₹389.93
-T3 ₹407.05 | T4 ₹432.72
-R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+Market/stock conditions do not
+justify a fresh trade.
+
+NO-TRADE IS A VALID SIGNAL.
 
 👀 WATCH
 
-#1 <b>SHYAMMETL</b> | WATCH | Score 79 | Price ₹1198.50 | DO NOT CHASE | Zone ₹1160.17–₹1177.66
+#1 <b>LAURUSLABS</b> | PRE-BREAKOUT | Score 74 | Price ₹2069.00 | WAIT BELOW ZONE | Zone ₹2075.57–₹2106.86
 
-#2 <b>INDHOTEL</b> | WATCH | Score 74 | Price ₹772.10 | DO NOT CHASE | Zone ₹751.23–₹766.32
+#2 <b>SHYAMMETL</b> | WATCH | Score 74 | Price ₹1226.60 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹1216.88–₹1235.23
 
-#3 <b>JINDALSAW</b> | WATCH | Score 70 | Price ₹301.55 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹300.79–₹305.32
+#3 <b>GABRIEL</b> | WATCH | Score 73 | Price ₹1486.10 | WAIT BELOW ZONE | Zone ₹1487.53–₹1509.95
 
-#4 <b>COFORGE</b> | WATCH | Score 70 | Price ₹1951.90 | WAIT BELOW ZONE | Zone ₹1960.15–₹1989.70
+#4 <b>HFCL</b> | WATCH | Score 77 | Price ₹268.81 | WAIT BELOW ZONE | Zone ₹274.53–₹278.67
 
-#5 <b>HAL</b> | WATCH | Score 67 | Price ₹4989.00 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹4926.24–₹5000.51
+#5 <b>TECHM</b> | WATCH | Score 72 | Price ₹1779.10 | WAIT BELOW ZONE | Zone ₹1788.02–₹1814.97
 
-Qualified: 2 | Watch: 36
+Qualified: 0 | Watch: 32
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
