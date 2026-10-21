@@ -1,7 +1,7 @@
 🚀 VALUE-MOMENTUM INSTITUTIONAL
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 
-📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -1.11% | Stocks above 20-DMA 26% | above 50-DMA 19%
+📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -0.34% | Stocks above 20-DMA 18% | above 50-DMA 14%
 
 🎯 ACTIONABLE SETUPS
 
@@ -14,17 +14,17 @@ NO-TRADE IS A VALID SIGNAL.
 
 👀 WATCH
 
-#1 <b>LAURUSLABS</b> | PRE-BREAKOUT | Score 74 | Price ₹2069.00 | WAIT BELOW ZONE | Zone ₹2075.57–₹2106.86
+#1 <b>PETRONET</b> | WATCH | Score 78 | Price ₹295.00 | WAIT BELOW ZONE | Zone ₹298.10–₹302.60
 
-#2 <b>HFCL</b> | WATCH | Score 82 | Price ₹268.81 | WAIT BELOW ZONE | Zone ₹274.53–₹278.67
+#2 <b>PVRINOX</b> | WATCH | Score 74 | Price ₹1417.90 | WAIT BELOW ZONE | Zone ₹1424.84–₹1446.32
 
-#3 <b>SHYAMMETL</b> | WATCH | Score 74 | Price ₹1226.60 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹1216.88–₹1235.23
+#3 <b>COFORGE</b> | WATCH | Score 73 | Price ₹1951.00 | WAIT BELOW ZONE | Zone ₹1960.15–₹1989.70
 
-#4 <b>GABRIEL</b> | WATCH | Score 73 | Price ₹1486.10 | WAIT BELOW ZONE | Zone ₹1487.53–₹1509.95
+#4 <b>PTCIL</b> | WATCH | Score 76 | Price ₹25115.00 | WAIT BELOW ZONE | Zone ₹25954.58–₹26345.85
 
-#5 <b>TECHM</b> | WATCH | Score 72 | Price ₹1779.10 | WAIT BELOW ZONE | Zone ₹1788.02–₹1814.97
+#5 <b>HFCL</b> | WATCH | Score 80 | Price ₹264.78 | WAIT BELOW ZONE | Zone ₹274.53–₹278.67
 
-Qualified: 0 | Watch: 32
+Qualified: 0 | Watch: 25
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
