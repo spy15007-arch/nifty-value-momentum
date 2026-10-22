@@ -4,8 +4,8 @@ on:
 
   workflow_dispatch:
 
-  schedule:
-    - cron: "45 8 * * 1-5"
+  # Scheduled Telegram delivery is centralized in Trading-OS-v12 at 2:30 PM IST.
+  # Keep this workflow available for manual runs only.
 
 permissions:
   contents: write
