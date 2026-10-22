@@ -1,30 +1,41 @@
 🚀 VALUE-MOMENTUM INSTITUTIONAL
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 
-📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -0.34% | Stocks above 20-DMA 18% | above 50-DMA 14%
+📊 MARKET SENTIMENT: BEARISH | Nifty 50 -0.54% | Stocks above 20-DMA 17% | above 50-DMA 13%
 
 🎯 ACTIONABLE SETUPS
 
-NO HIGH-QUALITY SETUP TODAY.
+⭐ #1 <b>TECHM</b> — PRE-BREAKOUT
+Score 77 | Sector 90
+PRICE ₹1829.10 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹1825.53–₹1853.05
+Ideal ₹1838.37 | SL ₹1742.35
+T1 ₹1982.40 | T2 ₹2078.43
+T3 ₹2174.45 | T4 ₹2318.48
+R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
-Market/stock conditions do not
-justify a fresh trade.
-
-NO-TRADE IS A VALID SIGNAL.
+🔥 #2 <b>INDHOTEL</b> — BREAKOUT
+Score 74 | Sector 54
+PRICE ₹782.30 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹772.27–₹787.79
+Ideal ₹780.03 | SL ₹749.96
+T1 ₹825.13 | T2 ₹855.20
+T3 ₹885.27 | T4 ₹930.37
+R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 👀 WATCH
 
-#1 <b>PETRONET</b> | WATCH | Score 78 | Price ₹295.00 | WAIT BELOW ZONE | Zone ₹298.10–₹302.60
+#1 <b>PVRINOX</b> | WATCH | Score 72 | Price ₹1419.90 | WAIT BELOW ZONE | Zone ₹1424.84–₹1446.32
 
-#2 <b>PVRINOX</b> | WATCH | Score 74 | Price ₹1417.90 | WAIT BELOW ZONE | Zone ₹1424.84–₹1446.32
+#2 <b>CASTROLIND</b> | PRE-BREAKOUT | Score 74 | Price ₹197.38 | WAIT BELOW ZONE | Zone ₹202.38–₹205.43
 
-#3 <b>COFORGE</b> | WATCH | Score 73 | Price ₹1951.00 | WAIT BELOW ZONE | Zone ₹1960.15–₹1989.70
+#3 <b>COFORGE</b> | WATCH | Score 74 | Price ₹1908.80 | WAIT BELOW ZONE | Zone ₹1960.15–₹1989.70
 
-#4 <b>PTCIL</b> | WATCH | Score 76 | Price ₹25115.00 | WAIT BELOW ZONE | Zone ₹25954.58–₹26345.85
+#4 <b>PETRONET</b> | WATCH | Score 72 | Price ₹290.40 | WAIT BELOW ZONE | Zone ₹298.10–₹302.60
 
-#5 <b>HFCL</b> | WATCH | Score 80 | Price ₹264.78 | WAIT BELOW ZONE | Zone ₹274.53–₹278.67
+#5 <b>SAGILITY</b> | WATCH | Score 71 | Price ₹45.39 | WAIT BELOW ZONE | Zone ₹46.01–₹46.70
 
-Qualified: 0 | Watch: 25
+Qualified: 2 | Watch: 23
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
