@@ -1,24 +1,25 @@
 name: Nifty Value Momentum Scanner
 
 on:
-
   workflow_dispatch:
-
-  # Scheduled Telegram delivery is centralized in Trading-OS-v12 at 2:30 PM IST.
-  # Keep this workflow available for manual runs only.
+  schedule:
+    # Run at 1:30 PM IST on weekdays so the scan has time to finish before 2:15 PM.
+    - cron: "0 8 * * 1-5"
 
 permissions:
   contents: write
 
+concurrency:
+  group: nifty-value-momentum-scan
+  cancel-in-progress: false
 
 jobs:
-
   scan:
-
     runs-on: ubuntu-latest
-
+    timeout-minutes: 35
+    env:
+      PYTHONUNBUFFERED: "1"
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -26,43 +27,41 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
+
+      - name: Check Python syntax
+        run: python -m compileall -q run_value_momentum.py scanner telegram_push.py
 
       - name: Run Value Momentum Scanner
-        run: |
-          python run_value_momentum.py
+        run: python run_value_momentum.py
 
       - name: Verify Telegram message
         run: |
-          echo "Checking scanner output..."
-          ls -la output/
-          echo ""
-          echo "Telegram message:"
+          test -s output/telegram_message.txt
+          echo "Scanner output created successfully."
           cat output/telegram_message.txt
 
       - name: Send Telegram Message
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          python telegram_push.py
-
-      - name: Verify Telegram Delivery
-        run: |
-          echo "Telegram push completed."
+        run: python telegram_push.py
 
       - name: Commit scanner output
+        if: success()
         run: |
-
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add output/*.csv output/*.txt || true
-
-          git diff --cached --quiet || git commit -m "Update value momentum scanner output"
-
-          git push || true
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/*.csv output/*.txt
+          if git diff --cached --quiet; then
+            echo "No scanner output changes to commit."
+          else
+            git commit -m "Update value momentum scanner output"
+            git push
+          fi
