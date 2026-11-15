@@ -647,6 +647,15 @@ def create_telegram_message(df, market_sentiment="UNAVAILABLE | Not calculated")
 
         "",
         f"📊 MARKET SENTIMENT: {market_sentiment}",
+        (
+            "⚖️ RISK MODE: SELECTIVE — reduce planned risk and demand confirmation."
+            if market_sentiment.startswith("MIXED / NEUTRAL")
+            else "🛡️ RISK MODE: DEFENSIVE — avoid marginal fresh longs."
+            if market_sentiment.startswith("BEARISH")
+            else "✅ RISK MODE: NORMAL — still require entry and volume discipline."
+            if market_sentiment.startswith("BULLISH")
+            else "⚠️ RISK MODE: DATA UNAVAILABLE — use conservative sizing."
+        ),
         "",
 
         "🎯 ACTIONABLE SETUPS",
@@ -742,6 +751,10 @@ def create_telegram_message(df, market_sentiment="UNAVAILABLE | Not calculated")
                         f"₹{row['entry_ideal']:.2f}"
                         f" | SL "
                         f"₹{row['stop']:.2f}"
+                    ),
+                    (
+                        f"Risk/share ₹{row.get('risk_per_share', row['entry_ideal'] - row['stop']):.2f}"
+                        f" | SL distance {row.get('stop_distance_pct', 0):.1f}%"
                     ),
 
                     (
