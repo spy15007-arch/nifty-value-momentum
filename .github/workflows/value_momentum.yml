@@ -37,6 +37,9 @@ jobs:
       - name: Check Python syntax
         run: python -m compileall -q run_value_momentum.py scanner telegram_push.py
 
+      - name: Run scanner unit tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
       - name: Run Value Momentum Scanner
         run: python run_value_momentum.py
 
