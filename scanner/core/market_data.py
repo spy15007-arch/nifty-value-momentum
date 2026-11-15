@@ -147,6 +147,12 @@ def indicators(df):
     x["atr_pct"] = x["atr14"] / close
     x["atr_pct_20ago"] = x["atr_pct"].shift(20)
     x["vol20_prev"] = x["vol20"].shift(20)
+    x["vol5"] = volume.rolling(5).mean()
+    x["volume_dryup_ratio"] = x["vol5"] / x["vol20"].replace(0, np.nan)
+    up_volume = volume.where(close > close.shift(), 0.0).rolling(20).sum()
+    down_volume = volume.where(close < close.shift(), 0.0).rolling(20).sum()
+    x["up_down_volume_ratio"] = up_volume / down_volume.replace(0, np.nan)
+    x["atr_contraction_ratio"] = x["atr_pct"] / x["atr_pct_20ago"].replace(0, np.nan)
 
     # Liquidity and compact-base measurements used by the quality filters.
     x["avg_traded_value_20d"] = (close * volume).rolling(20).mean()
@@ -200,6 +206,21 @@ def latest_metrics(x):
         "range20_pct": (
             float(row["range20_pct"])
             if pd.notna(row["range20_pct"])
+            else np.nan
+        ),
+        "volume_dryup_ratio": (
+            float(row["volume_dryup_ratio"])
+            if pd.notna(row["volume_dryup_ratio"])
+            else np.nan
+        ),
+        "up_down_volume_ratio": (
+            float(row["up_down_volume_ratio"])
+            if pd.notna(row["up_down_volume_ratio"])
+            else np.nan
+        ),
+        "atr_contraction_ratio": (
+            float(row["atr_contraction_ratio"])
+            if pd.notna(row["atr_contraction_ratio"])
             else np.nan
         ),
     }
