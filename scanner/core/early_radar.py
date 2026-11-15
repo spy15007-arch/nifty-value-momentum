@@ -1,21 +1,24 @@
-"""Early-base radar for candidates that are not yet actionable breakouts.
-
-This is a watchlist layer, not a buy signal. It uses the full-universe
-qualification diagnostics produced by scanner.core.scanner.
-"""
+"""Early-base radar: observation-only candidates before a confirmed breakout."""
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
-
 
 OUTPUT_DIR = Path("output")
 
 
-def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame:
-    """Select constructive bases 1-10% below 20-day resistance.
+def _numeric(df, column, default=50.0):
+    if column not in df.columns:
+        return pd.Series(default, index=df.index, dtype=float)
+    return pd.to_numeric(df[column], errors="coerce").fillna(default)
 
-    The relaxed gates intentionally identify candidates before the strict
-    PRE-BREAKOUT/ BREAKOUT rules pass. Candidates remain observation-only.
+
+def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame:
+    """Rank constructive bases 0.5%-10% below 20-day resistance.
+
+    Volume dry-up and up/down-volume are supporting indicators, not hard
+    gates. The latter is a simple price-direction volume proxy, not proof
+    of institutional accumulation.
     """
     if diagnostics is None or diagnostics.empty:
         return pd.DataFrame()
@@ -29,19 +32,14 @@ def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame
     if not required.issubset(df.columns):
         return pd.DataFrame()
 
-    numeric = [
+    for col in [
         "price", "early_score", "trend_raw", "momentum_raw",
         "relative_strength", "sector_score", "quality_coverage",
         "dist20res", "range10_pct",
-    ]
-    for col in numeric:
+    ]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    liquidity = df["liquidity_ok"].astype(str).str.lower().isin(
-        ["true", "1", "yes"]
-    )
-    # dist20res is (prior 20-day high - price) / prior 20-day high.
-    # Keep names near resistance, but still below it: 0.5%-10%.
+    liquidity = df["liquidity_ok"].astype(str).str.lower().isin(["true", "1", "yes"])
     mask = (
         df["price"].gt(0)
         & df["early_score"].ge(60)
@@ -59,53 +57,77 @@ def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame
     if candidates.empty:
         return candidates
 
-    candidates["resistance"] = (
-        candidates["price"] / (1.0 - candidates["dist20res"])
-    )
+    candidates["resistance"] = candidates["price"] / (1.0 - candidates["dist20res"])
     candidates["trigger"] = candidates["resistance"] * 1.002
-    candidates = candidates.sort_values(
-        ["early_score", "momentum_raw", "trend_raw"],
-        ascending=False,
-    )
-    return candidates.head(limit).reset_index(drop=True)
+    candidates["radar_proximity_score"] = (
+        100 - candidates["dist20res"].clip(0, 0.10) * 1000
+    ).clip(0, 100)
+    candidates["radar_tightness_score"] = (
+        100 - candidates["range10_pct"].clip(0, 0.15) / 0.15 * 100
+    ).clip(0, 100)
+
+    dryup = _numeric(candidates, "volume_dryup_ratio", 0.85)
+    candidates["radar_volume_dryup_score"] = (
+        100 - (dryup - 0.75).abs().clip(0, 1.0) * 100
+    ).clip(0, 100)
+    accumulation = _numeric(candidates, "up_down_volume_ratio", 1.0)
+    candidates["radar_accumulation_score"] = (
+        accumulation.clip(0, 2.0) / 2.0 * 100
+    ).clip(0, 100)
+    rs_score = (
+        candidates["relative_strength"].clip(0, 0.20) / 0.20 * 100
+    ).clip(0, 100)
+
+    candidates["radar_score"] = (
+        candidates["early_score"] * 0.25
+        + candidates["trend_raw"] * 0.15
+        + candidates["momentum_raw"] * 0.15
+        + candidates["radar_proximity_score"] * 0.15
+        + candidates["radar_tightness_score"] * 0.10
+        + candidates["radar_volume_dryup_score"] * 0.10
+        + candidates["radar_accumulation_score"] * 0.05
+        + rs_score * 0.05
+    ).clip(0, 100)
+
+    return candidates.sort_values(
+        ["radar_score", "early_score", "momentum_raw"], ascending=False
+    ).head(limit).reset_index(drop=True)
 
 
-def append_early_radar(message_path: Path = OUTPUT_DIR / "telegram_message.txt",
-                       diagnostics_path: Path = OUTPUT_DIR / "qualification_diagnostics.csv",
-                       output_path: Path = OUTPUT_DIR / "early_base_radar.csv") -> int:
-    """Append a concise observation-only early-base section to Telegram text."""
+def append_early_radar(
+    message_path: Path = OUTPUT_DIR / "telegram_message.txt",
+    diagnostics_path: Path = OUTPUT_DIR / "qualification_diagnostics.csv",
+    output_path: Path = OUTPUT_DIR / "early_base_radar.csv",
+) -> int:
+    """Append the observation-only early-base section to Telegram text."""
     if not diagnostics_path.exists() or not message_path.exists():
         print("Early-base radar skipped: scanner output files are missing.")
         return 0
 
-    diagnostics = pd.read_csv(diagnostics_path)
-    candidates = build_early_radar(diagnostics)
+    candidates = build_early_radar(pd.read_csv(diagnostics_path))
     candidates.to_csv(output_path, index=False)
-
     lines = ["", "🌱 EARLY BASE RADAR — OBSERVE, NOT A BUY SIGNAL", ""]
     if candidates.empty:
-        lines.extend([
-            "No early-base candidates passed the relaxed quality and trend filters.",
-            "",
-        ])
+        lines.extend(["No early-base candidates passed the quality and structure filters.", ""])
     else:
         for rank, row in candidates.iterrows():
             distance = float(row["dist20res"]) * 100
+            dryup = row.get("volume_dryup_ratio", np.nan)
+            accum = row.get("up_down_volume_ratio", np.nan)
+            volume_note = f" | 5D/20D vol {float(dryup):.2f}x" if pd.notna(dryup) else ""
+            accumulation_note = f" | Up/down vol {float(accum):.2f}x" if pd.notna(accum) else ""
             lines.append(
                 f"#{rank + 1} {row['symbol']} | EARLY BASE | "
-                f"Price ₹{row['price']:.2f} | "
-                f"20D resistance ₹{row['resistance']:.2f} | "
-                f"Trigger ₹{row['trigger']:.2f} | "
-                f"{distance:.1f}% below resistance | "
-                f"Early score {row['early_score']:.0f}"
+                f"Price ₹{row['price']:.2f} | 20D resistance ₹{row['resistance']:.2f} | "
+                f"Trigger ₹{row['trigger']:.2f} | {distance:.1f}% below resistance | "
+                f"Radar {row['radar_score']:.0f}{volume_note}{accumulation_note}"
             )
             lines.append("")
         lines.extend([
-            "Wait for price/volume confirmation above the trigger.",
+            "Wait for a closing breakout with strong volume confirmation.",
             "No entry, stop-loss or target is issued at the early-base stage.",
             "",
         ])
-
     with message_path.open("a", encoding="utf-8") as handle:
         handle.write("\n".join(lines))
     print(f"Early-base radar appended: {len(candidates)} candidate(s).")
