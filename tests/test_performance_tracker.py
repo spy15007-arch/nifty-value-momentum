@@ -8,7 +8,7 @@ from scanner.core.performance_tracker import update_performance_tracker
 
 
 class PerformanceTrackerTests(unittest.TestCase):
-    def test_records_signal_and_forward_close_returns(self):
+    def test_updates_forward_returns_from_prior_signal_snapshot(self):
         dates = pd.bdate_range("2026-01-01", periods=14)
         prices = [100 + i for i in range(14)]
         columns = pd.MultiIndex.from_product([["TEST.NS"], ["Close"]])
@@ -26,13 +26,21 @@ class PerformanceTrackerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             history = Path(temp) / "history.csv"
             summary = Path(temp) / "summary.csv"
+            pd.DataFrame([{
+                "scan_date": dates[0].date().isoformat(),
+                "ticker": "TEST.NS", "symbol": "TEST",
+                "signal_type": "WATCH", "signal_price": 100,
+                "score": 70, "market_sentiment": "BULLISH",
+            }]).to_csv(history, index=False)
             update_performance_tracker(
                 diagnostics, price_data, "BULLISH",
                 history_path=history, summary_path=summary,
             )
             saved = pd.read_csv(history)
-            self.assertEqual(len(saved), 1)
-            self.assertAlmostEqual(saved.iloc[0]["return_1d_pct"], 0.88496, places=3)
+            prior = saved[saved["scan_date"] == dates[0].date().isoformat()].iloc[0]
+            self.assertAlmostEqual(prior["return_1d_pct"], 1.0, places=3)
+            self.assertAlmostEqual(prior["return_3d_pct"], 3.0, places=3)
+            self.assertAlmostEqual(prior["return_5d_pct"], 5.0, places=3)
             self.assertTrue(summary.exists())
 
 
