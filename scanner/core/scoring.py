@@ -1044,6 +1044,10 @@ def technical_scores(
 
 
     df["stop"] = stop
+    df["risk_per_share"] = (df["entry_ideal"] - df["stop"]).clip(lower=0.01)
+    df["stop_distance_pct"] = (
+        df["risk_per_share"] / df["entry_ideal"].replace(0, np.nan) * 100
+    )
 
 
     # =====================================================
