@@ -518,6 +518,11 @@ OUTPUT_COLUMNS = [
 
     "atr_pct",
     "volume_ratio",
+    "volume_dryup_ratio",
+    "up_down_volume_ratio",
+    "atr_contraction_ratio",
+    "risk_per_share",
+    "stop_distance_pct",
 
     "entry_low",
     "entry_ideal",
@@ -1034,7 +1039,8 @@ def run():
             "quality_score", "fundamental_coverage", "quality_coverage",
             "dist20res", "range10_pct", "range20_pct",
             "avg_traded_value_20d", "liquidity_ok",
-            "volume_ratio", "chase", "not_yet_in_range",
+            "volume_ratio", "volume_dryup_ratio", "up_down_volume_ratio",
+            "atr_contraction_ratio", "chase", "not_yet_in_range",
             "entry_ready", "entry_readiness_score", "ranking_score",
             "diagnostic_reason",
         ] if col in df.columns
@@ -1210,6 +1216,11 @@ def run():
         df,
         market_sentiment=market_sentiment,
     )
+
+    # Persist signal snapshots and their 1/3/5/10-session forward returns.
+    # These are research observations, not assumed trade fills or P&L.
+    from .performance_tracker import update_performance_tracker
+    update_performance_tracker(df, data, market_sentiment)
 
 
     # -----------------------------------------------------
