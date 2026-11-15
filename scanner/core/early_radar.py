@@ -77,16 +77,21 @@ def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame
     rs_score = (
         candidates["relative_strength"].clip(0, 0.20) / 0.20 * 100
     ).clip(0, 100)
+    atr_contraction = _numeric(candidates, "atr_contraction_ratio", 1.0)
+    candidates["radar_atr_contraction_score"] = (
+        100 - ((atr_contraction - 0.70).clip(lower=0) / 0.80 * 100)
+    ).clip(0, 100)
 
     candidates["radar_score"] = (
-        candidates["early_score"] * 0.25
-        + candidates["trend_raw"] * 0.15
-        + candidates["momentum_raw"] * 0.15
-        + candidates["radar_proximity_score"] * 0.15
-        + candidates["radar_tightness_score"] * 0.10
-        + candidates["radar_volume_dryup_score"] * 0.10
+        candidates["early_score"] * 0.23
+        + candidates["trend_raw"] * 0.14
+        + candidates["momentum_raw"] * 0.14
+        + candidates["radar_proximity_score"] * 0.14
+        + candidates["radar_tightness_score"] * 0.09
+        + candidates["radar_volume_dryup_score"] * 0.09
         + candidates["radar_accumulation_score"] * 0.05
         + rs_score * 0.05
+        + candidates["radar_atr_contraction_score"] * 0.07
     ).clip(0, 100)
 
     return candidates.sort_values(
