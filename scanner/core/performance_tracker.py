@@ -67,7 +67,9 @@ def update_performance_tracker(
         )
         if duplicate.any():
             continue
-        score = row.get("radar_score", row.get("final_score", row.get("early_score", 0)))
+        score = row.get("radar_score", pd.NA)
+        if pd.isna(score):
+            score = row.get("final_score", row.get("early_score", 0))
         new_rows.append({
             "scan_date": scan_date, "ticker": ticker, "symbol": symbol,
             "signal_type": signal_type, "signal_price": float(close.iloc[-1]),
