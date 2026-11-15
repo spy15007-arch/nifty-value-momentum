@@ -33,12 +33,26 @@ R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 #4 <b>AUROPHARMA</b> | PRE-BREAKOUT | Score 75 | Price ₹1823.20 | WAIT BELOW ZONE | Zone ₹1850.60–₹1878.50
 
-#5 <b>MCX</b> | WATCH | Score 77 | Price ₹3720.00 | DO NOT CHASE | Zone ₹3626.78–₹3699.67
+#5 <b>PVRINOX</b> | WATCH | Score 75 | Price ₹1641.20 | WAIT BELOW ZONE | Zone ₹1651.70–₹1676.60
 
-Qualified: 2 | Watch: 70
+Qualified: 2 | Watch: 71
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
 
 Fresh buying only inside the stated range.
 Do not chase above the range.
+🌱 EARLY BASE RADAR — OBSERVE, NOT A BUY SIGNAL
+
+#1 PVRINOX | EARLY BASE | Price ₹1641.20 | 20D resistance ₹1660.00 | Trigger ₹1663.32 | 1.1% below resistance | Early score 89
+
+#2 DLF | EARLY BASE | Price ₹758.75 | 20D resistance ₹770.45 | Trigger ₹771.99 | 1.5% below resistance | Early score 84
+
+#3 ACUTAAS | EARLY BASE | Price ₹4039.10 | 20D resistance ₹4120.00 | Trigger ₹4128.24 | 2.0% below resistance | Early score 82
+
+#4 TVSMOTOR | EARLY BASE | Price ₹4495.00 | 20D resistance ₹4636.10 | Trigger ₹4645.37 | 3.0% below resistance | Early score 81
+
+#5 PPLPHARMA | EARLY BASE | Price ₹244.54 | 20D resistance ₹250.40 | Trigger ₹250.90 | 2.3% below resistance | Early score 80
+
+Wait for price/volume confirmation above the trigger.
+No entry, stop-loss or target is issued at the early-base stage.
