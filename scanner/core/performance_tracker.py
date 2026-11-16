@@ -1,6 +1,6 @@
-"""Persist signal snapshots and measure subsequent close-to-close follow-through.
+"""Persist signal snapshots and measure subsequent daily-close follow-through from the scan-time price.
 
-These are research observations, not simulated fills or audited trading P&L.
+These are research observations, not simulated fills or audited BTST/swing P&L.
 """
 from pathlib import Path
 
@@ -165,7 +165,7 @@ def update_performance_tracker(
                 "average_return_pct": round(float(values.mean()), 3),
                 "median_return_pct": round(float(values.median()), 3),
                 "profit_factor_close_returns": round(float(gross_profit / gross_loss), 3) if gross_loss > 0 else pd.NA,
-                "note": "Close-to-close signal follow-through; not simulated trade P&L.",
+                "note": "Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.",
             })
     pd.DataFrame(summary_rows).to_csv(summary_path, index=False)
     print(f"Performance tracker updated: {len(history)} observations; {len(summary_rows)} summary rows.")
