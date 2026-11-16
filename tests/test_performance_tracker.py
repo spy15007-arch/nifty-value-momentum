@@ -4,7 +4,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from scanner.core.performance_tracker import update_performance_tracker
+from scanner.core.performance_tracker import (
+    build_stage_transition_summary,
+    update_performance_tracker,
+)
 
 
 class PerformanceTrackerTests(unittest.TestCase):
@@ -42,6 +45,28 @@ class PerformanceTrackerTests(unittest.TestCase):
             self.assertAlmostEqual(prior["return_3d_pct"], 3.0, places=3)
             self.assertAlmostEqual(prior["return_5d_pct"], 5.0, places=3)
             self.assertTrue(summary.exists())
+
+
+    def test_summarizes_stage_progression_without_counting_repeated_days(self):
+        history = pd.DataFrame([
+            {"scan_date": "2026-01-01", "symbol": "ABC", "signal_type": "EARLY_BASE"},
+            {"scan_date": "2026-01-02", "symbol": "ABC", "signal_type": "EARLY_BASE"},
+            {"scan_date": "2026-01-03", "symbol": "ABC", "signal_type": "PRE-BREAKOUT"},
+            {"scan_date": "2026-01-04", "symbol": "ABC", "signal_type": "BREAKOUT"},
+            {"scan_date": "2026-01-02", "symbol": "XYZ", "signal_type": "WATCH"},
+            {"scan_date": "2026-01-03", "symbol": "XYZ", "signal_type": "PRE-BREAKOUT"},
+        ])
+        summary = build_stage_transition_summary(history)
+        pairs = set(zip(summary["from_stage"], summary["to_stage"]))
+        self.assertIn(("EARLY_BASE", "PRE-BREAKOUT"), pairs)
+        self.assertIn(("PRE-BREAKOUT", "BREAKOUT"), pairs)
+        self.assertIn(("WATCH", "PRE-BREAKOUT"), pairs)
+        early_to_pre = summary[
+            (summary["from_stage"] == "EARLY_BASE")
+            & (summary["to_stage"] == "PRE-BREAKOUT")
+        ].iloc[0]
+        self.assertEqual(early_to_pre["transition_count"], 1)
+        self.assertEqual(early_to_pre["unique_symbols"], 1)
 
 
 if __name__ == "__main__":
