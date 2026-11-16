@@ -1,0 +1,32 @@
+WEEKLY VALUE-MOMENTUM PERFORMANCE
+Latest scan date in report: 2026-11-16
+Coverage: most recent 1 scan week(s); weeks begin Monday.
+
+Weekly cohorts: scan-time price versus subsequent daily closing prices.
+Win rate counts positive returns only; zero returns are not wins.
+Pending observations have not yet reached the stated forward horizon.
+
+Week start | Signal | Horizon | Signals | Matured | Pending | Win % | Avg % | Median %
+----------------------------------------------------------------------------------------------
+2026-11-16 | EARLY_BASE | 1D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | EARLY_BASE | 3D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | EARLY_BASE | 5D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | EARLY_BASE | 10D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | PRE-BREAKOUT | 1D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | PRE-BREAKOUT | 3D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | PRE-BREAKOUT | 5D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | PRE-BREAKOUT | 10D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | WATCH | 1D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | WATCH | 3D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | WATCH | 5D | 5 | 0 | 5 | n/a | n/a | n/a
+2026-11-16 | WATCH | 10D | 5 | 0 | 5 | n/a | n/a | n/a
+
+OBSERVED STAGE TRANSITIONS
+Not enough repeated observations to show stage transitions yet.
+
+IMPORTANT METHODOLOGY
+- Signal sample: tracked top actionable/watch candidates plus up to five early-base radar names; not the full 501-stock universe.
+- Returns are from the recorded scan-time price to the 1st, 3rd, 5th or 10th subsequent daily close.
+- This is not actual BTST/swing trade P&L: no assumed fills, stop-loss execution, intraday path, brokerage, taxes or slippage.
+- Latest week may be partial. Compare only horizons with adequate matured observations; do not treat small samples as proof.
+- No scoring or entry thresholds are changed by this report.

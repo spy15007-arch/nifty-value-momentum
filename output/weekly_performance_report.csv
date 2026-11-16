@@ -1,0 +1,13 @@
+week_start,signal_type,horizon_sessions,signal_count,matured_count,pending_count,win_rate_pct,average_return_pct,median_return_pct,best_return_pct,worst_return_pct
+2026-11-16,EARLY_BASE,1,5,0,5,,,,,
+2026-11-16,EARLY_BASE,3,5,0,5,,,,,
+2026-11-16,EARLY_BASE,5,5,0,5,,,,,
+2026-11-16,EARLY_BASE,10,5,0,5,,,,,
+2026-11-16,PRE-BREAKOUT,1,5,0,5,,,,,
+2026-11-16,PRE-BREAKOUT,3,5,0,5,,,,,
+2026-11-16,PRE-BREAKOUT,5,5,0,5,,,,,
+2026-11-16,PRE-BREAKOUT,10,5,0,5,,,,,
+2026-11-16,WATCH,1,5,0,5,,,,,
+2026-11-16,WATCH,3,5,0,5,,,,,
+2026-11-16,WATCH,5,5,0,5,,,,,
+2026-11-16,WATCH,10,5,0,5,,,,,
