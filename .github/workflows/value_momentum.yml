@@ -30,21 +30,30 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # Manual runs must always remain available, including reruns after a
+          # successful scheduled scan. Deduplicate scheduled triggers only.
+          if [ "$GITHUB_EVENT_NAME" != "schedule" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Manual run: bypassing the scheduled-run duplicate guard."
+            exit 0
+          fi
+
           today_ist="$(TZ=Asia/Kolkata date +%F)"
           runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/value_momentum.yml/runs?branch=main&per_page=100")"
           successful_today="$(printf '%s' "$runs" | jq --arg today "$today_ist" --arg current "$GITHUB_RUN_ID" '
             [.workflow_runs[]
               | select((.id | tostring) != $current)
+              | select(.event == "schedule")
               | select(.status == "completed" and .conclusion == "success")
               | select((.created_at | fromdateiso8601 + 19800 | strftime("%Y-%m-%d")) == $today)
             ] | length
           ')"
           if [ "$successful_today" -gt 0 ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "A successful scan already exists for $today_ist (IST); skipping duplicate trigger."
+            echo "A successful scheduled scan already exists for $today_ist (IST); skipping duplicate trigger."
           else
             echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "No successful scan exists for $today_ist (IST); proceeding."
+            echo "No successful scheduled scan exists for $today_ist (IST); proceeding."
           fi
 
       - name: Checkout repository
