@@ -3,11 +3,12 @@ name: Nifty Value Momentum Scanner
 on:
   workflow_dispatch:
   schedule:
-    # Primary run: 1:30 PM IST. Backup triggers reduce the chance of a missed
-    # GitHub scheduled event. The daily guard below prevents duplicate scans.
-    - cron: "0 8 * * 1-5"
-    - cron: "15 8 * * 1-5"
-    - cron: "30 8 * * 1-5"
+    # Daily-candle BTST / swing scan near the market close.
+    # 3:20 PM IST primary; 3:25 PM and 3:35 PM IST backup triggers.
+    # GitHub may delay scheduled events; the guard prevents duplicate scans.
+    - cron: "50 9 * * 1-5"
+    - cron: "55 9 * * 1-5"
+    - cron: "5 10 * * 1-5"
 
 permissions:
   actions: read
