@@ -1,4 +1,4 @@
-"""Persist signal snapshots and measure subsequent daily-close follow-through from the scan-time price.
+"""Persist signal snapshots and measure subsequent daily-close follow-through.
 
 These are research observations, not simulated fills or audited BTST/swing P&L.
 """
@@ -17,6 +17,12 @@ HISTORY_COLUMNS = [
     "return_5d_pct", "return_10d_pct",
 ]
 TRANSITION_COLUMNS = ["from_stage", "to_stage", "transition_count", "unique_symbols", "note"]
+WEEKLY_COLUMNS = [
+    "week_start", "signal_type", "horizon_sessions", "signal_count",
+    "matured_count", "pending_count", "win_rate_pct",
+    "average_return_pct", "median_return_pct", "best_return_pct",
+    "worst_return_pct",
+]
 
 
 def build_stage_transition_summary(history: pd.DataFrame) -> pd.DataFrame:
@@ -58,6 +64,119 @@ def build_stage_transition_summary(history: pd.DataFrame) -> pd.DataFrame:
     ).reset_index(drop=True)
 
 
+def build_weekly_performance_report(
+    history: pd.DataFrame,
+    weeks: int = 4,
+    report_csv_path: Path = OUTPUT_DIR / "weekly_performance_report.csv",
+    report_text_path: Path = OUTPUT_DIR / "weekly_performance_report.txt",
+) -> pd.DataFrame:
+    """Build weekly scan-cohort results using subsequent daily closes at 1/3/5/10 sessions."""
+    report_csv_path.parent.mkdir(parents=True, exist_ok=True)
+    if history is None or history.empty or not {"scan_date", "signal_type"}.issubset(history.columns):
+        weekly = pd.DataFrame(columns=WEEKLY_COLUMNS)
+        weekly.to_csv(report_csv_path, index=False)
+        report_text_path.write_text(
+            "WEEKLY VALUE-MOMENTUM PERFORMANCE\\nNo signal history is available yet.\\n",
+            encoding="utf-8",
+        )
+        return weekly
+
+    clean = history.copy()
+    clean["scan_date"] = pd.to_datetime(clean["scan_date"], errors="coerce")
+    clean = clean.dropna(subset=["scan_date", "signal_type"])
+    if clean.empty:
+        weekly = pd.DataFrame(columns=WEEKLY_COLUMNS)
+        weekly.to_csv(report_csv_path, index=False)
+        report_text_path.write_text(
+            "WEEKLY VALUE-MOMENTUM PERFORMANCE\\nNo valid dated signal history is available yet.\\n",
+            encoding="utf-8",
+        )
+        return weekly
+
+    clean["week_start"] = (
+        clean["scan_date"] - pd.to_timedelta(clean["scan_date"].dt.weekday, unit="D")
+    ).dt.strftime("%Y-%m-%d")
+    recent_weeks = sorted(clean["week_start"].unique())[-max(1, int(weeks)):]
+    clean = clean[clean["week_start"].isin(recent_weeks)]
+
+    rows = []
+    for (week_start, signal_type), group in clean.groupby(["week_start", "signal_type"]):
+        signal_count = int(len(group))
+        for horizon in HORIZONS:
+            col = f"return_{horizon}d_pct"
+            values = (
+                pd.to_numeric(group[col], errors="coerce").dropna()
+                if col in group.columns else pd.Series(dtype=float)
+            )
+            matured = int(len(values))
+            rows.append({
+                "week_start": week_start,
+                "signal_type": str(signal_type),
+                "horizon_sessions": horizon,
+                "signal_count": signal_count,
+                "matured_count": matured,
+                "pending_count": signal_count - matured,
+                "win_rate_pct": round(float((values > 0).mean() * 100), 2) if matured else pd.NA,
+                "average_return_pct": round(float(values.mean()), 3) if matured else pd.NA,
+                "median_return_pct": round(float(values.median()), 3) if matured else pd.NA,
+                "best_return_pct": round(float(values.max()), 3) if matured else pd.NA,
+                "worst_return_pct": round(float(values.min()), 3) if matured else pd.NA,
+            })
+
+    weekly = pd.DataFrame(rows, columns=WEEKLY_COLUMNS)
+    weekly.to_csv(report_csv_path, index=False)
+
+    latest_date = clean["scan_date"].max().date().isoformat()
+    lines = [
+        "WEEKLY VALUE-MOMENTUM PERFORMANCE",
+        f"Latest scan date in report: {latest_date}",
+        f"Coverage: most recent {len(recent_weeks)} scan week(s); weeks begin Monday.",
+        "",
+        "Weekly cohorts: scan-time price versus subsequent daily closing prices.",
+        "Win rate counts positive returns only; zero returns are not wins.",
+        "Pending observations have not yet reached the stated forward horizon.",
+        "",
+        "Week start | Signal | Horizon | Signals | Matured | Pending | Win % | Avg % | Median %",
+        "-" * 94,
+    ]
+    for _, row in weekly.sort_values(
+        ["week_start", "signal_type", "horizon_sessions"],
+        ascending=[False, True, True],
+    ).iterrows():
+        def fmt(value):
+            return "n/a" if pd.isna(value) else f"{float(value):.2f}"
+        lines.append(
+            f"{row['week_start']} | {row['signal_type']} | {int(row['horizon_sessions'])}D | "
+            f"{int(row['signal_count'])} | {int(row['matured_count'])} | {int(row['pending_count'])} | "
+            f"{fmt(row['win_rate_pct'])} | {fmt(row['average_return_pct'])} | "
+            f"{fmt(row['median_return_pct'])}"
+        )
+
+    transitions = build_stage_transition_summary(history)
+    lines.extend(["", "OBSERVED STAGE TRANSITIONS"])
+    if transitions.empty:
+        lines.append("Not enough repeated observations to show stage transitions yet.")
+    else:
+        for _, row in transitions.iterrows():
+            lines.append(
+                f"{row['from_stage']} -> {row['to_stage']}: "
+                f"{int(row['transition_count'])} transition(s), "
+                f"{int(row['unique_symbols'])} unique symbol(s)"
+            )
+
+    lines.extend([
+        "",
+        "IMPORTANT METHODOLOGY",
+        "- Signal sample: tracked top actionable/watch candidates plus up to five early-base radar names; not the full 501-stock universe.",
+        "- Returns are from the recorded scan-time price to the 1st, 3rd, 5th or 10th subsequent daily close.",
+        "- This is not actual BTST/swing trade P&L: no assumed fills, stop-loss execution, intraday path, brokerage, taxes or slippage.",
+        "- Latest week may be partial. Compare only horizons with adequate matured observations; do not treat small samples as proof.",
+        "- No scoring or entry thresholds are changed by this report.",
+    ])
+    report_text_path.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+    return weekly
+
+
 def update_performance_tracker(
     diagnostics: pd.DataFrame,
     price_data: pd.DataFrame,
@@ -65,6 +184,8 @@ def update_performance_tracker(
     history_path: Path = OUTPUT_DIR / "signal_history.csv",
     summary_path: Path = OUTPUT_DIR / "performance_summary.csv",
     transition_summary_path: Path = OUTPUT_DIR / "stage_transition_summary.csv",
+    weekly_report_csv_path: Path = OUTPUT_DIR / "weekly_performance_report.csv",
+    weekly_report_text_path: Path = OUTPUT_DIR / "weekly_performance_report.txt",
 ) -> None:
     """Update forward close returns for actionable/watch and early-base signals."""
     if diagnostics is None or diagnostics.empty or price_data is None or price_data.empty:
@@ -168,4 +289,12 @@ def update_performance_tracker(
                 "note": "Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.",
             })
     pd.DataFrame(summary_rows).to_csv(summary_path, index=False)
-    print(f"Performance tracker updated: {len(history)} observations; {len(summary_rows)} summary rows.")
+    weekly = build_weekly_performance_report(
+        history,
+        report_csv_path=weekly_report_csv_path,
+        report_text_path=weekly_report_text_path,
+    )
+    print(
+        f"Performance tracker updated: {len(history)} observations; "
+        f"{len(summary_rows)} summary rows; {len(weekly)} weekly report rows."
+    )
