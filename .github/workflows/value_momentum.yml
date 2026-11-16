@@ -3,10 +3,14 @@ name: Nifty Value Momentum Scanner
 on:
   workflow_dispatch:
   schedule:
-    # Run at 1:30 PM IST on weekdays so the scan has time to finish before 2:15 PM.
+    # Primary run: 1:30 PM IST. Backup triggers reduce the chance of a missed
+    # GitHub scheduled event. The daily guard below prevents duplicate scans.
     - cron: "0 8 * * 1-5"
+    - cron: "15 8 * * 1-5"
+    - cron: "30 8 * * 1-5"
 
 permissions:
+  actions: read
   contents: write
 
 concurrency:
@@ -20,36 +24,67 @@ jobs:
     env:
       PYTHONUNBUFFERED: "1"
     steps:
+      - name: Prevent duplicate daily scans
+        id: daily_guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          today_ist="$(TZ=Asia/Kolkata date +%F)"
+          runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/value_momentum.yml/runs?branch=main&per_page=100")"
+          successful_today="$(printf '%s' "$runs" | jq --arg today "$today_ist" --arg current "$GITHUB_RUN_ID" '
+            [.workflow_runs[]
+              | select((.id | tostring) != $current)
+              | select(.status == "completed" and .conclusion == "success")
+              | select((.created_at | fromdateiso8601 + 19800 | strftime("%Y-%m-%d")) == $today)
+            ] | length
+          ')"
+          if [ "$successful_today" -gt 0 ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "A successful scan already exists for $today_ist (IST); skipping duplicate trigger."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "No successful scan exists for $today_ist (IST); proceeding."
+          fi
+
       - name: Checkout repository
+        if: steps.daily_guard.outputs.run == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Python
+        if: steps.daily_guard.outputs.run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
 
       - name: Install dependencies
+        if: steps.daily_guard.outputs.run == 'true'
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
       - name: Check Python syntax
+        if: steps.daily_guard.outputs.run == 'true'
         run: python -m compileall -q run_value_momentum.py scanner telegram_push.py
 
       - name: Run scanner unit tests
+        if: steps.daily_guard.outputs.run == 'true'
         run: python -m unittest discover -s tests -p 'test_*.py' -v
 
       - name: Run Value Momentum Scanner
+        if: steps.daily_guard.outputs.run == 'true'
         run: python run_value_momentum.py
 
       - name: Verify Telegram message
+        if: steps.daily_guard.outputs.run == 'true'
         run: |
           test -s output/telegram_message.txt
           echo "Scanner output created successfully."
           cat output/telegram_message.txt
 
       - name: Send Telegram Message
+        if: steps.daily_guard.outputs.run == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
