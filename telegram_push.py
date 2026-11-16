@@ -1,5 +1,7 @@
 import os
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -7,6 +9,7 @@ import requests
 OUTPUT_DIR = Path("output")
 
 TELEGRAM_LIMIT = 4000
+INDIA_TZ = ZoneInfo("Asia/Kolkata")
 
 
 def send_telegram(message):
@@ -97,10 +100,18 @@ def main():
     send_telegram(
         message
     )
-
     print(
-        "Telegram message sent successfully."
+        "Telegram scanner message sent successfully."
     )
+
+    # Deliver the expanded performance review once per Friday scan.
+    india_now = datetime.now(INDIA_TZ)
+    weekly_report_file = OUTPUT_DIR / "weekly_performance_report.txt"
+    if india_now.weekday() == 4 and weekly_report_file.exists():
+        weekly_report = weekly_report_file.read_text(encoding="utf-8").strip()
+        if weekly_report:
+            send_telegram(weekly_report)
+            print("Weekly performance report sent successfully.")
 
 
 if __name__ == "__main__":
