@@ -76,7 +76,7 @@ def build_weekly_performance_report(
         weekly = pd.DataFrame(columns=WEEKLY_COLUMNS)
         weekly.to_csv(report_csv_path, index=False)
         report_text_path.write_text(
-            "WEEKLY VALUE-MOMENTUM PERFORMANCE\\nNo signal history is available yet.\\n",
+            "WEEKLY VALUE-MOMENTUM PERFORMANCE\nNo signal history is available yet.\n",
             encoding="utf-8",
         )
         return weekly
@@ -88,7 +88,7 @@ def build_weekly_performance_report(
         weekly = pd.DataFrame(columns=WEEKLY_COLUMNS)
         weekly.to_csv(report_csv_path, index=False)
         report_text_path.write_text(
-            "WEEKLY VALUE-MOMENTUM PERFORMANCE\\nNo valid dated signal history is available yet.\\n",
+            "WEEKLY VALUE-MOMENTUM PERFORMANCE\nNo valid dated signal history is available yet.\n",
             encoding="utf-8",
         )
         return weekly
@@ -173,7 +173,7 @@ def build_weekly_performance_report(
         "- Latest week may be partial. Compare only horizons with adequate matured observations; do not treat small samples as proof.",
         "- No scoring or entry thresholds are changed by this report.",
     ])
-    report_text_path.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+    report_text_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return weekly
 
 
