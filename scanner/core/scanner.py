@@ -644,6 +644,7 @@ def create_telegram_message(df, market_sentiment="UNAVAILABLE | Not calculated")
         "🚀 VALUE-MOMENTUM INSTITUTIONAL",
 
         "NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250",
+        "📅 DAILY-TIMEFRAME SCAN | BTST / SWING — NOT AN INTRADAY SIGNAL",
 
         "",
         f"📊 MARKET SENTIMENT: {market_sentiment}",
