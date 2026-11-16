@@ -91,7 +91,7 @@ jobs:
         run: python telegram_push.py
 
       - name: Commit scanner output
-        if: success()
+        if: success() && steps.daily_guard.outputs.run == 'true'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
