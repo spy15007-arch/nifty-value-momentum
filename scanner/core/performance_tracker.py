@@ -16,6 +16,46 @@ HISTORY_COLUMNS = [
     "score", "market_sentiment", "return_1d_pct", "return_3d_pct",
     "return_5d_pct", "return_10d_pct",
 ]
+TRANSITION_COLUMNS = ["from_stage", "to_stage", "transition_count", "unique_symbols", "note"]
+
+
+def build_stage_transition_summary(history: pd.DataFrame) -> pd.DataFrame:
+    """Summarize observed stage changes; tracked candidates are a sample, not the full universe."""
+    if history is None or history.empty:
+        return pd.DataFrame(columns=TRANSITION_COLUMNS)
+    required = {"scan_date", "symbol", "signal_type"}
+    if not required.issubset(history.columns):
+        return pd.DataFrame(columns=TRANSITION_COLUMNS)
+
+    transitions = []
+    clean = history.dropna(subset=["scan_date", "symbol", "signal_type"])
+    for symbol, group in clean.groupby("symbol"):
+        ordered = group.sort_values(["scan_date", "signal_type"])
+        stages = ordered["signal_type"].astype(str).tolist()
+        compact = []
+        for stage in stages:
+            if not compact or stage != compact[-1]:
+                compact.append(stage)
+        transitions.extend(
+            {"symbol": str(symbol), "from_stage": left, "to_stage": right}
+            for left, right in zip(compact, compact[1:])
+            if left != right
+        )
+
+    if not transitions:
+        return pd.DataFrame(columns=TRANSITION_COLUMNS)
+    frame = pd.DataFrame(transitions)
+    summary = frame.groupby(["from_stage", "to_stage"]).agg(
+        transition_count=("symbol", "size"),
+        unique_symbols=("symbol", "nunique"),
+    ).reset_index()
+    summary["note"] = (
+        "Observed transitions among tracked top candidates only; not a full-universe "
+        "conversion rate or trade-performance measure."
+    )
+    return summary[TRANSITION_COLUMNS].sort_values(
+        ["from_stage", "to_stage"]
+    ).reset_index(drop=True)
 
 
 def update_performance_tracker(
@@ -24,6 +64,7 @@ def update_performance_tracker(
     market_sentiment: str,
     history_path: Path = OUTPUT_DIR / "signal_history.csv",
     summary_path: Path = OUTPUT_DIR / "performance_summary.csv",
+    transition_summary_path: Path = OUTPUT_DIR / "stage_transition_summary.csv",
 ) -> None:
     """Update forward close returns for actionable/watch and early-base signals."""
     if diagnostics is None or diagnostics.empty or price_data is None or price_data.empty:
@@ -103,6 +144,8 @@ def update_performance_tracker(
         subset=["scan_date", "symbol", "signal_type"], keep="last"
     )
     history.to_csv(history_path, index=False)
+
+    build_stage_transition_summary(history).to_csv(transition_summary_path, index=False)
 
     summary_rows = []
     for signal_type, group in history.groupby("signal_type"):
