@@ -1,14 +1,9 @@
 name: Nifty Value Momentum Scanner
 
 on:
+  # cron-job.org is the sole scheduler. It dispatches this workflow at 3:20 PM IST.
+  # Manual runs remain available from the GitHub Actions page.
   workflow_dispatch:
-  schedule:
-    # Daily-candle BTST / swing scan near the market close.
-    # 3:20 PM IST primary; 3:25 PM and 3:35 PM IST backup triggers.
-    # GitHub may delay scheduled events; the guard prevents duplicate scans.
-    - cron: "50 9 * * 1-5"
-    - cron: "55 9 * * 1-5"
-    - cron: "5 10 * * 1-5"
 
 permissions:
   actions: read
@@ -25,37 +20,11 @@ jobs:
     env:
       PYTHONUNBUFFERED: "1"
     steps:
-      - name: Prevent duplicate daily scans
+      - name: Allow external scheduler and manual runs
         id: daily_guard
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
-          # Manual runs must always remain available, including reruns after a
-          # successful scheduled scan. Deduplicate scheduled triggers only.
-          if [ "$GITHUB_EVENT_NAME" != "schedule" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Manual run: bypassing the scheduled-run duplicate guard."
-            exit 0
-          fi
-
-          today_ist="$(TZ=Asia/Kolkata date +%F)"
-          runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/value_momentum.yml/runs?branch=main&per_page=100")"
-          successful_today="$(printf '%s' "$runs" | jq --arg today "$today_ist" --arg current "$GITHUB_RUN_ID" '
-            [.workflow_runs[]
-              | select((.id | tostring) != $current)
-              | select(.event == "schedule")
-              | select(.status == "completed" and .conclusion == "success")
-              | select((.created_at | fromdateiso8601 + 19800 | strftime("%Y-%m-%d")) == $today)
-            ] | length
-          ')"
-          if [ "$successful_today" -gt 0 ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "A successful scheduled scan already exists for $today_ist (IST); skipping duplicate trigger."
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "No successful scheduled scan exists for $today_ist (IST); proceeding."
-          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+          echo "Proceeding with workflow_dispatch. cron-job.org controls the schedule."
 
       - name: Checkout repository
         if: steps.daily_guard.outputs.run == 'true'
