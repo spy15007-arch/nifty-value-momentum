@@ -2,44 +2,74 @@
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 📅 DAILY-TIMEFRAME SCAN | BTST / SWING — NOT AN INTRADAY SIGNAL
 
-📊 MARKET SENTIMENT: BULLISH | Nifty 50 +0.58% | Stocks above 20-DMA 74% | above 50-DMA 57%
+📊 MARKET SENTIMENT: BULLISH | Nifty 50 +0.48% | Stocks above 20-DMA 74% | above 50-DMA 58%
 ✅ RISK MODE: NORMAL — still require entry and volume discipline.
 
 🎯 ACTIONABLE SETUPS
 
-⭐ #1 <b>ETERNAL</b> — PRE-BREAKOUT
-Score 74 | Sector 60
-PRICE ₹371.10 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹370.24–₹375.82
-Ideal ₹372.84 | SL ₹357.15
-Risk/share ₹15.69 | SL distance 4.2%
-T1 ₹396.39 | T2 ₹412.08
-T3 ₹427.77 | T4 ₹451.32
+🔥 #1 <b>HONASA</b> — BREAKOUT
+Score 77 | Sector 46
+PRICE ₹518.90 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹514.37–₹524.70
+Ideal ₹519.53 | SL ₹491.54
+Risk/share ₹28.00 | SL distance 5.4%
+T1 ₹561.53 | T2 ₹589.53
+T3 ₹617.53 | T4 ₹659.53
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 ⭐ #2 <b>KARURVYSYA</b> — PRE-BREAKOUT
-Score 74 | Sector 52
-PRICE ₹390.25 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹388.85–₹394.71
-Ideal ₹391.58 | SL ₹370.19
-Risk/share ₹21.39 | SL distance 5.5%
-T1 ₹423.67 | T2 ₹445.07
-T3 ₹466.46 | T4 ₹498.55
+Score 75 | Sector 58
+PRICE ₹395.00 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹393.72–₹399.66
+Ideal ₹396.49 | SL ₹375.81
+Risk/share ₹20.68 | SL distance 5.2%
+T1 ₹427.51 | T2 ₹448.19
+T3 ₹468.87 | T4 ₹499.89
+R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+
+🔥 #3 <b>KPRMILL</b> — BREAKOUT
+Score 77 | Sector 95
+PRICE ₹1216.00 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹1211.81–₹1236.17
+Ideal ₹1223.99 | SL ₹1148.37
+Risk/share ₹75.62 | SL distance 6.2%
+T1 ₹1337.42 | T2 ₹1413.03
+T3 ₹1488.65 | T4 ₹1602.08
+R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+
+⭐ #4 <b>KOTAKBANK</b> — PRE-BREAKOUT
+Score 71 | Sector 58
+PRICE ₹497.90 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹495.41–₹502.88
+Ideal ₹498.90 | SL ₹482.22
+Risk/share ₹16.67 | SL distance 3.3%
+T1 ₹523.90 | T2 ₹540.57
+T3 ₹557.24 | T4 ₹582.25
+R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+
+🔥 #5 <b>MOTILALOFS</b> — BREAKOUT
+Score 77 | Sector 58
+PRICE ₹1240.00 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹1231.81–₹1256.57
+Ideal ₹1244.19 | SL ₹1163.41
+Risk/share ₹80.78 | SL distance 6.5%
+T1 ₹1365.35 | T2 ₹1446.13
+T3 ₹1526.90 | T4 ₹1648.07
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 👀 WATCH
 
-#1 <b>PNB</b> | WATCH | Score 78 | Price ₹144.59 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹144.41–₹146.59
+#1 <b>GAIL</b> | PRE-BREAKOUT | Score 76 | Price ₹187.30 | WAIT BELOW ZONE | Zone ₹188.95–₹191.80
 
-#2 <b>UNIONBANK</b> | WATCH | Score 74 | Price ₹205.60 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹204.22–₹207.30
+#2 <b>ETERNAL</b> | WATCH | Score 75 | Price ₹374.90 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹370.64–₹376.23
 
-#3 <b>GAIL</b> | PRE-BREAKOUT | Score 76 | Price ₹187.00 | WAIT BELOW ZONE | Zone ₹188.95–₹191.80
+#3 <b>PVRINOX</b> | WATCH | Score 76 | Price ₹1676.90 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹1666.62–₹1691.75
 
-#4 <b>GLAND</b> | WATCH | Score 73 | Price ₹3385.90 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹3357.13–₹3407.74
+#4 <b>UNIONBANK</b> | WATCH | Score 74 | Price ₹207.50 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹205.46–₹208.55
 
-#5 <b>KOTAKBANK</b> | WATCH | Score 71 | Price ₹494.20 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹491.58–₹498.99
+#5 <b>INDHOTEL</b> | PRE-BREAKOUT | Score 74 | Price ₹897.20 | WAIT BELOW ZONE | Zone ₹898.09–₹911.63
 
-Qualified: 2 | Watch: 75
+Qualified: 5 | Watch: 76
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
@@ -48,15 +78,15 @@ Fresh buying only inside the stated range.
 Do not chase above the range.
 🌱 EARLY BASE RADAR — OBSERVE, NOT A BUY SIGNAL
 
-#1 PVRINOX | EARLY BASE | Price ₹1639.40 | 20D resistance ₹1675.00 | Trigger ₹1678.35 | 2.1% below resistance | Radar 83 | 5D/20D vol 0.82x | Up/down vol 2.28x
+#1 SONACOMS | EARLY BASE | Price ₹896.80 | 20D resistance ₹934.90 | Trigger ₹936.77 | 4.1% below resistance | Radar 80 | 5D/20D vol 0.47x | Up/down vol 2.15x
 
-#2 SONACOMS | EARLY BASE | Price ₹899.00 | 20D resistance ₹934.90 | Trigger ₹936.77 | 3.8% below resistance | Radar 78 | 5D/20D vol 0.45x | Up/down vol 2.17x
+#2 BHARTIARTL | EARLY BASE | Price ₹2149.80 | 20D resistance ₹2172.30 | Trigger ₹2176.64 | 1.0% below resistance | Radar 79 | 5D/20D vol 0.80x | Up/down vol 2.08x
 
-#3 DLF | EARLY BASE | Price ₹754.75 | 20D resistance ₹770.45 | Trigger ₹771.99 | 2.0% below resistance | Radar 77 | 5D/20D vol 1.09x | Up/down vol 1.46x
+#3 DLF | EARLY BASE | Price ₹762.05 | 20D resistance ₹770.45 | Trigger ₹771.99 | 1.1% below resistance | Radar 79 | 5D/20D vol 1.15x | Up/down vol 1.50x
 
-#4 TECHM | EARLY BASE | Price ₹1776.40 | 20D resistance ₹1860.00 | Trigger ₹1863.72 | 4.5% below resistance | Radar 76 | 5D/20D vol 0.55x | Up/down vol 1.46x
+#4 COFORGE | EARLY BASE | Price ₹2040.00 | 20D resistance ₹2127.90 | Trigger ₹2132.16 | 4.1% below resistance | Radar 78 | 5D/20D vol 0.70x | Up/down vol 1.27x
 
-#5 TRENT | EARLY BASE | Price ₹3203.70 | 20D resistance ₹3238.00 | Trigger ₹3244.48 | 1.1% below resistance | Radar 76 | 5D/20D vol 0.84x | Up/down vol 1.63x
+#5 LTTS | EARLY BASE | Price ₹4194.70 | 20D resistance ₹4347.40 | Trigger ₹4356.09 | 3.5% below resistance | Radar 76 | 5D/20D vol 0.12x | Up/down vol 3.25x
 
 Wait for a closing breakout with strong volume confirmation.
 No entry, stop-loss or target is issued at the early-base stage.

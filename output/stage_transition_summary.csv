@@ -1,1 +1,4 @@
 from_stage,to_stage,transition_count,unique_symbols,note
+EARLY_BASE,WATCH,1,1,Observed transitions among tracked top candidates only; not a full-universe conversion rate or trade-performance measure.
+PRE-BREAKOUT,WATCH,1,1,Observed transitions among tracked top candidates only; not a full-universe conversion rate or trade-performance measure.
+WATCH,BREAKOUT,1,1,Observed transitions among tracked top candidates only; not a full-universe conversion rate or trade-performance measure.
