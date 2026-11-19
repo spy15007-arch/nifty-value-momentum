@@ -2,54 +2,54 @@
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 📅 DAILY-TIMEFRAME SCAN | BTST / SWING — NOT AN INTRADAY SIGNAL
 
-📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -0.66% | Stocks above 20-DMA 68% | above 50-DMA 52%
-⚖️ RISK MODE: SELECTIVE — reduce planned risk and demand confirmation.
+📊 MARKET SENTIMENT: BULLISH | Nifty 50 +1.09% | Stocks above 20-DMA 72% | above 50-DMA 60%
+✅ RISK MODE: NORMAL — still require entry and volume discipline.
 
 🎯 ACTIONABLE SETUPS
 
-🔥 #1 <b>GAIL</b> — BREAKOUT
-Score 82 | Sector 82
-PRICE ₹189.85 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹188.95–₹192.75
-Ideal ₹190.85 | SL ₹183.34
-Risk/share ₹7.51 | SL distance 3.9%
-T1 ₹202.11 | T2 ₹209.62
-T3 ₹217.13 | T4 ₹228.39
+⭐ #1 <b>GAIL</b> — PRE-BREAKOUT
+Score 82 | Sector 85
+PRICE ₹191.23 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹190.39–₹193.26
+Ideal ₹191.73 | SL ₹184.83
+Risk/share ₹6.90 | SL distance 3.6%
+T1 ₹202.08 | T2 ₹208.98
+T3 ₹215.88 | T4 ₹226.22
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
-🔥 #2 <b>MAHABANK</b> — BREAKOUT
-Score 80 | Sector 51
-PRICE ₹96.15 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹95.62–₹97.54
-Ideal ₹96.58 | SL ₹92.25
-Risk/share ₹4.33 | SL distance 4.5%
-T1 ₹103.08 | T2 ₹107.41
-T3 ₹111.74 | T4 ₹118.24
+🔥 #2 <b>HEROMOTOCO</b> — BREAKOUT
+Score 80 | Sector 82
+PRICE ₹5536.00 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹5522.25–₹5633.25
+Ideal ₹5577.75 | SL ₹5329.86
+Risk/share ₹247.89 | SL distance 4.4%
+T1 ₹5949.59 | T2 ₹6197.48
+T3 ₹6445.37 | T4 ₹6817.21
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
-🔥 #3 <b>HONASA</b> — BREAKOUT
-Score 79 | Sector 49
-PRICE ₹524.00 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹521.38–₹531.86
-Ideal ₹526.62 | SL ₹495.57
-Risk/share ₹31.05 | SL distance 5.9%
-T1 ₹573.20 | T2 ₹604.25
-T3 ₹635.30 | T4 ₹681.87
+⭐ #3 <b>KOTAKBANK</b> — PRE-BREAKOUT
+Score 71 | Sector 54
+PRICE ₹501.85 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹500.53–₹508.08
+Ideal ₹504.06 | SL ₹486.73
+Risk/share ₹17.32 | SL distance 3.4%
+T1 ₹530.04 | T2 ₹547.37
+T3 ₹564.69 | T4 ₹590.68
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 👀 WATCH
 
-#1 <b>PVRINOX</b> | WATCH | Score 78 | Price ₹1712.00 | DO NOT CHASE | Zone ₹1681.55–₹1706.90
+#1 <b>TVSMOTOR</b> | WATCH | Score 79 | Price ₹4599.90 | WAIT BELOW ZONE | Zone ₹4612.92–₹4682.46
 
-#2 <b>PNB</b> | WATCH | Score 76 | Price ₹149.80 | WAIT BELOW ZONE | Zone ₹150.91–₹153.19
+#2 <b>PNB</b> | WATCH | Score 81 | Price ₹155.72 | DO NOT CHASE | Zone ₹151.83–₹154.12
 
-#3 <b>KOTAKBANK</b> | PRE-BREAKOUT | Score 73 | Price ₹494.45 | WAIT BELOW ZONE | Zone ₹497.40–₹504.90
+#3 <b>MAHABANK</b> | WATCH | Score 78 | Price ₹97.85 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹96.52–₹97.97
 
-#4 <b>ICICIBANK</b> | PRE-BREAKOUT | Score 73 | Price ₹1598.80 | WAIT BELOW ZONE | Zone ₹1607.92–₹1632.16
+#4 <b>UNIONBANK</b> | WATCH | Score 74 | Price ₹210.00 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹208.65–₹211.80
 
-#5 <b>URBANCO</b> | WATCH | Score 72 | Price ₹172.87 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹172.28–₹174.88
+#5 <b>ICICIBANK</b> | PRE-BREAKOUT | Score 73 | Price ₹1606.60 | WAIT BELOW ZONE | Zone ₹1607.92–₹1632.16
 
-Qualified: 3 | Watch: 77
+Qualified: 3 | Watch: 87
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
@@ -58,15 +58,15 @@ Fresh buying only inside the stated range.
 Do not chase above the range.
 🌱 EARLY BASE RADAR — OBSERVE, NOT A BUY SIGNAL
 
-#1 DLF | EARLY BASE | Price ₹768.40 | 20D resistance ₹773.65 | Trigger ₹775.20 | 0.7% below resistance | Radar 82 | 5D/20D vol 0.94x | Up/down vol 1.75x
+#1 ANANDRATHI | EARLY BASE | Price ₹2375.00 | 20D resistance ₹2410.00 | Trigger ₹2414.82 | 1.5% below resistance | Radar 87 | 5D/20D vol 0.51x | Up/down vol 3.45x
 
-#2 COFORGE | EARLY BASE | Price ₹2050.00 | 20D resistance ₹2127.90 | Trigger ₹2132.16 | 3.7% below resistance | Radar 80 | 5D/20D vol 0.76x | Up/down vol 1.47x
+#2 DLF | EARLY BASE | Price ₹766.85 | 20D resistance ₹773.65 | Trigger ₹775.20 | 0.9% below resistance | Radar 87 | 5D/20D vol 0.76x | Up/down vol 1.85x
 
-#3 ETERNAL | EARLY BASE | Price ₹365.10 | 20D resistance ₹378.00 | Trigger ₹378.76 | 3.4% below resistance | Radar 80 | 5D/20D vol 0.67x | Up/down vol 1.71x
+#3 TVSMOTOR | EARLY BASE | Price ₹4599.90 | 20D resistance ₹4636.10 | Trigger ₹4645.37 | 0.8% below resistance | Radar 85 | 5D/20D vol 1.14x | Up/down vol 2.78x
 
-#4 INDHOTEL | EARLY BASE | Price ₹874.90 | 20D resistance ₹909.65 | Trigger ₹911.47 | 3.8% below resistance | Radar 79 | 5D/20D vol 0.64x | Up/down vol 3.02x
+#4 PVRINOX | EARLY BASE | Price ₹1698.50 | 20D resistance ₹1739.80 | Trigger ₹1743.28 | 2.4% below resistance | Radar 84 | 5D/20D vol 0.78x | Up/down vol 1.97x
 
-#5 SONACOMS | EARLY BASE | Price ₹890.45 | 20D resistance ₹934.90 | Trigger ₹936.77 | 4.8% below resistance | Radar 79 | 5D/20D vol 0.45x | Up/down vol 2.44x
+#5 ETERNAL | EARLY BASE | Price ₹366.10 | 20D resistance ₹378.00 | Trigger ₹378.76 | 3.1% below resistance | Radar 83 | 5D/20D vol 0.77x | Up/down vol 2.14x
 
 Wait for a closing breakout with strong volume confirmation.
 No entry, stop-loss or target is issued at the early-base stage.
