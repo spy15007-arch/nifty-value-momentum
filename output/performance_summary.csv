@@ -1,8 +1,9 @@
 signal_type,horizon_sessions,observations,win_rate_pct,average_return_pct,median_return_pct,profit_factor_close_returns,note
-BREAKOUT,1,5,80.0,0.8,1.079,6.724,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
-EARLY_BASE,1,15,53.33,0.125,0.078,1.281,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
-EARLY_BASE,3,5,80.0,0.652,0.556,2.127,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
-PRE-BREAKOUT,1,11,72.73,0.716,1.05,2.751,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
-PRE-BREAKOUT,3,5,60.0,1.339,1.022,3.27,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
-WATCH,1,14,64.29,0.184,0.343,1.227,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
-WATCH,3,5,60.0,1.398,1.548,2.591,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+BREAKOUT,1,6,66.67,0.71,1.079,5.31,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+BREAKOUT,3,2,50.0,-0.514,-0.514,0.521,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+EARLY_BASE,1,19,47.37,0.068,-0.021,1.14,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+EARLY_BASE,3,10,70.0,0.572,0.505,1.907,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+PRE-BREAKOUT,1,15,66.67,0.776,1.05,3.076,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+PRE-BREAKOUT,3,8,62.5,0.73,1.145,1.8,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+WATCH,1,19,57.89,0.283,0.328,1.417,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
+WATCH,3,10,60.0,1.076,1.056,2.242,Scan-time price to subsequent daily closes; not simulated BTST/swing trade P&L.
