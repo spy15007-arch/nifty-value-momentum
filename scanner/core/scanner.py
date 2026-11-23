@@ -512,6 +512,12 @@ OUTPUT_COLUMNS = [
     "sma20",
     "sma50",
     "sma200",
+    "rsi14",
+    "rsi14_prev",
+    "rsi14_change",
+    "extension20_pct",
+    "extension50_pct",
+    "breakout_extension_pct",
 
     "dist52",
     "dist20res",
@@ -732,7 +738,9 @@ def create_telegram_message(df, market_sentiment="UNAVAILABLE | Not calculated")
                         f"Score "
                         f"{row['final_score']:.0f} | "
                         f"Sector "
-                        f"{row['sector_score']:.0f}"
+                        f"{row['sector_score']:.0f} | "
+                        f"RSI-14 {row.get('rsi14', 0):.0f} | "
+                        f"{row.get('extension20_pct', 0) * 100:+.1f}% vs 20-DMA"
                     ),
 
                     (
@@ -803,7 +811,9 @@ def create_telegram_message(df, market_sentiment="UNAVAILABLE | Not calculated")
             current_price = float(row.get("price", 0) or 0)
             entry_low = float(row.get("entry_low", 0) or 0)
             entry_high = float(row.get("entry_high", 0) or 0)
-            if current_price < entry_low:
+            if bool(row.get("late_stage", False)):
+                status = "LATE-STAGE — WAIT FOR RESET"
+            elif current_price < entry_low:
                 status = "WAIT BELOW ZONE"
             elif current_price > entry_high:
                 status = "DO NOT CHASE"
@@ -1025,6 +1035,10 @@ def run():
                 reasons.append("Trend score below 70")
             if float(row.get("sector_score", 50) or 0) < 45:
                 reasons.append("Sector score below 45")
+            if float(row.get("rsi14", 0) or 0) >= 70:
+                reasons.append("RSI-14 above 70; check extension and avoid chasing")
+            if bool(row.get("late_stage", False)):
+                reasons.append("Late-stage / extended move; wait for a reset or fresh base")
             if bool(row.get("chase", False)):
                 reasons.append("Price above calculated buy range; do not chase")
             if bool(row.get("not_yet_in_range", False)):
@@ -1048,12 +1062,18 @@ def run():
     diagnostic_columns = [
         col for col in [
             "rank", "symbol", "ticker", "index", "sector", "price",
-            "final_score", "early_score", "setup", "trend_raw",
+            "final_score", "early_score", "setup", "rsi14",
+            "rsi14_prev", "rsi14_change", "extension20_pct",
+            "extension50_pct", "breakout_extension_pct", "late_stage",
+            "entry_extension_penalty", "trend_raw",
             "momentum_raw", "relative_strength", "sector_score",
             "quality_score", "fundamental_coverage", "quality_coverage",
             "dist20res", "range10_pct", "range20_pct",
             "avg_traded_value_20d", "liquidity_ok",
             "volume_ratio", "volume_dryup_ratio", "up_down_volume_ratio",
+            "rsi14", "rsi14_prev", "rsi14_change", "extension20_pct",
+            "extension50_pct", "breakout_extension_pct", "late_stage",
+            "entry_extension_penalty",
             "atr_contraction_ratio", "chase", "not_yet_in_range",
             "entry_ready", "entry_readiness_score", "ranking_score",
             "diagnostic_reason",
