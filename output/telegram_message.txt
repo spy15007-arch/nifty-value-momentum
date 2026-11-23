@@ -2,74 +2,54 @@
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 📅 DAILY-TIMEFRAME SCAN | BTST / SWING — NOT AN INTRADAY SIGNAL
 
-📊 MARKET SENTIMENT: BULLISH | Nifty 50 +1.12% | Stocks above 20-DMA 72% | above 50-DMA 60%
-✅ RISK MODE: NORMAL — still require entry and volume discipline.
+📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -1.68% | Stocks above 20-DMA 64% | above 50-DMA 57%
+⚖️ RISK MODE: SELECTIVE — reduce planned risk and demand confirmation.
 
 🎯 ACTIONABLE SETUPS
 
-⭐ #1 <b>GAIL</b> — PRE-BREAKOUT
-Score 79 | Sector 82
-PRICE ₹191.44 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹191.34–₹194.22
-Ideal ₹192.68 | SL ₹185.29
-Risk/share ₹7.40 | SL distance 3.8%
-T1 ₹203.78 | T2 ₹211.18
-T3 ₹218.57 | T4 ₹229.67
+🔥 #1 <b>HONASA</b> — BREAKOUT
+Score 78 | Sector 56
+PRICE ₹538.05 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹532.23–₹542.92
+Ideal ₹537.57 | SL ₹509.12
+Risk/share ₹28.45 | SL distance 5.3%
+T1 ₹580.25 | T2 ₹608.71
+T3 ₹637.16 | T4 ₹679.84
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
-🔥 #2 <b>MAHABANK</b> — BREAKOUT
-Score 79 | Sector 48
-PRICE ₹99.45 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹98.23–₹100.20
-Ideal ₹99.21 | SL ₹95.16
-Risk/share ₹4.06 | SL distance 4.1%
-T1 ₹105.30 | T2 ₹109.36
-T3 ₹113.42 | T4 ₹119.50
+🔥 #2 <b>PERSISTENT</b> — BREAKOUT
+Score 74 | Sector 68
+PRICE ₹6307.50 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹6208.80–₹6333.60
+Ideal ₹6271.20 | SL ₹6042.86
+Risk/share ₹228.34 | SL distance 3.6%
+T1 ₹6613.71 | T2 ₹6842.06
+T3 ₹7070.40 | T4 ₹7412.91
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
-🔥 #3 <b>WELSPUNLIV</b> — BREAKOUT
-Score 80 | Sector 95
-PRICE ₹268.78 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹266.16–₹271.51
-Ideal ₹268.84 | SL ₹245.96
-Risk/share ₹22.87 | SL distance 8.5%
-T1 ₹303.15 | T2 ₹326.02
-T3 ₹348.90 | T4 ₹383.21
-R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
-
-⭐ #4 <b>HEROMOTOCO</b> — PRE-BREAKOUT
-Score 75 | Sector 78
-PRICE ₹5536.00 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹5532.70–₹5616.11
-Ideal ₹5571.62 | SL ₹5335.11
-Risk/share ₹236.51 | SL distance 4.2%
-T1 ₹5926.39 | T2 ₹6162.91
-T3 ₹6399.42 | T4 ₹6754.19
-R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
-
-⭐ #5 <b>BAJFINANCE</b> — PRE-BREAKOUT
-Score 68 | Sector 48
-PRICE ₹1122.00 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹1121.27–₹1138.17
-Ideal ₹1129.15 | SL ₹1072.88
-Risk/share ₹56.27 | SL distance 5.0%
-T1 ₹1213.56 | T2 ₹1269.84
-T3 ₹1326.11 | T4 ₹1410.52
+⭐ #3 <b>APOLLOHOSP</b> — PRE-BREAKOUT
+Score 70 | Sector 88
+PRICE ₹9260.00 | ENTRY STATUS: IN RANGE
+BUY RANGE ₹9236.09–₹9375.33
+Ideal ₹9301.07 | SL ₹8942.48
+Risk/share ₹358.58 | SL distance 3.9%
+T1 ₹9838.94 | T2 ₹10197.52
+T3 ₹10556.11 | T4 ₹11093.98
 R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
 
 👀 WATCH
 
-#1 <b>TVSMOTOR</b> | PRE-BREAKOUT | Score 76 | Price ₹4590.00 | WAIT BELOW ZONE | Zone ₹4612.92–₹4682.46
+#1 <b>MAHABANK</b> | WATCH | Score 79 | Price ₹97.99 | WAIT BELOW ZONE | Zone ₹99.10–₹100.60
 
-#2 <b>PNB</b> | WATCH | Score 77 | Price ₹155.33 | WAIT BELOW ZONE | Zone ₹155.71–₹158.05
+#2 <b>PETRONET</b> | PRE-BREAKOUT | Score 78 | Price ₹328.50 | WAIT BELOW ZONE | Zone ₹334.62–₹339.66
 
-#3 <b>INDHOTEL</b> | WATCH | Score 73 | Price ₹912.00 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹905.10–₹918.75
+#3 <b>COFORGE</b> | WATCH | Score 77 | Price ₹2149.30 | WAIT BELOW ZONE | Zone ₹2166.91–₹2199.58
 
-#4 <b>COFORGE</b> | WATCH | Score 78 | Price ₹2086.70 | WAIT BELOW ZONE | Zone ₹2117.26–₹2149.18
+#4 <b>HEROMOTOCO</b> | PRE-BREAKOUT | Score 75 | Price ₹5529.50 | WAIT BELOW ZONE | Zone ₹5568.02–₹5651.96
 
-#5 <b>FEDERALBNK</b> | WATCH | Score 74 | Price ₹373.50 | DO NOT CHASE | Zone ₹367.06–₹372.59
+#5 <b>LALPATHLAB</b> | WATCH | Score 76 | Price ₹2039.50 | WAIT BELOW ZONE | Zone ₹2063.48–₹2094.58
 
-Qualified: 5 | Watch: 92
+Qualified: 3 | Watch: 94
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
@@ -78,15 +58,15 @@ Fresh buying only inside the stated range.
 Do not chase above the range.
 🌱 EARLY BASE RADAR — OBSERVE, NOT A BUY SIGNAL
 
-#1 ANANDRATHI | EARLY BASE | Price ₹2375.80 | 20D resistance ₹2410.00 | Trigger ₹2414.82 | 1.4% below resistance | Radar 88 | 5D/20D vol 0.49x | Up/down vol 3.23x
+#1 POONAWALLA | EARLY BASE | Price ₹514.65 | 20D resistance ₹522.00 | Trigger ₹523.04 | 1.4% below resistance | Radar 84 | 5D/20D vol 0.78x | Up/down vol 5.25x
 
-#2 ETERNAL | EARLY BASE | Price ₹364.00 | 20D resistance ₹378.00 | Trigger ₹378.76 | 3.7% below resistance | Radar 83 | 5D/20D vol 0.90x | Up/down vol 3.40x
+#2 ETERNAL | EARLY BASE | Price ₹363.70 | 20D resistance ₹378.00 | Trigger ₹378.76 | 3.8% below resistance | Radar 83 | 5D/20D vol 0.89x | Up/down vol 2.62x
 
-#3 SONACOMS | EARLY BASE | Price ₹892.50 | 20D resistance ₹934.90 | Trigger ₹936.77 | 4.5% below resistance | Radar 81 | 5D/20D vol 0.44x | Up/down vol 2.98x
+#3 PVRINOX | EARLY BASE | Price ₹1700.00 | 20D resistance ₹1747.00 | Trigger ₹1750.49 | 2.7% below resistance | Radar 82 | 5D/20D vol 0.92x | Up/down vol 1.90x
 
-#4 RADICO | EARLY BASE | Price ₹4665.00 | 20D resistance ₹4703.70 | Trigger ₹4713.11 | 0.8% below resistance | Radar 81 | 5D/20D vol 0.60x | Up/down vol 1.95x
+#4 GLAND | EARLY BASE | Price ₹3300.40 | 20D resistance ₹3429.00 | Trigger ₹3435.86 | 3.8% below resistance | Radar 81 | 5D/20D vol 0.50x | Up/down vol 3.59x
 
-#5 AUROPHARMA | EARLY BASE | Price ₹1799.00 | 20D resistance ₹1859.90 | Trigger ₹1863.62 | 3.3% below resistance | Radar 80 | 5D/20D vol 0.80x | Up/down vol 2.46x
+#5 LALPATHLAB | EARLY BASE | Price ₹2039.50 | 20D resistance ₹2073.85 | Trigger ₹2077.99 | 1.7% below resistance | Radar 81 | 5D/20D vol 0.83x | Up/down vol 2.10x
 
 Wait for a closing breakout with strong volume confirmation.
 No entry, stop-loss or target is issued at the early-base stage.

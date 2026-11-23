@@ -1,6 +1,6 @@
 WEEKLY VALUE-MOMENTUM PERFORMANCE
-Latest scan date in report: 2026-11-20
-Coverage: most recent 1 scan week(s); weeks begin Monday.
+Latest scan date in report: 2026-11-23
+Coverage: most recent 2 scan week(s); weeks begin Monday.
 
 Weekly cohorts: scan-time price versus subsequent daily closing prices.
 Win rate counts positive returns only; zero returns are not wins.
@@ -8,33 +8,49 @@ Pending observations have not yet reached the stated forward horizon.
 
 Week start | Signal | Horizon | Signals | Matured | Pending | Win % | Avg % | Median %
 ----------------------------------------------------------------------------------------------
-2026-11-16 | BREAKOUT | 1D | 8 | 6 | 2 | 66.67 | 0.76 | 1.08
-2026-11-16 | BREAKOUT | 3D | 8 | 2 | 6 | 50.00 | -0.39 | -0.39
+2026-11-23 | BREAKOUT | 1D | 2 | 0 | 2 | n/a | n/a | n/a
+2026-11-23 | BREAKOUT | 3D | 2 | 0 | 2 | n/a | n/a | n/a
+2026-11-23 | BREAKOUT | 5D | 2 | 0 | 2 | n/a | n/a | n/a
+2026-11-23 | BREAKOUT | 10D | 2 | 0 | 2 | n/a | n/a | n/a
+2026-11-23 | EARLY_BASE | 1D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | EARLY_BASE | 3D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | EARLY_BASE | 5D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | EARLY_BASE | 10D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | PRE-BREAKOUT | 1D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | PRE-BREAKOUT | 3D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | PRE-BREAKOUT | 5D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | PRE-BREAKOUT | 10D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | WATCH | 1D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | WATCH | 3D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | WATCH | 5D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-23 | WATCH | 10D | 4 | 0 | 4 | n/a | n/a | n/a
+2026-11-16 | BREAKOUT | 1D | 8 | 8 | 0 | 62.50 | 0.57 | 1.01
+2026-11-16 | BREAKOUT | 3D | 8 | 5 | 3 | 60.00 | 0.35 | 1.25
 2026-11-16 | BREAKOUT | 5D | 8 | 0 | 8 | n/a | n/a | n/a
 2026-11-16 | BREAKOUT | 10D | 8 | 0 | 8 | n/a | n/a | n/a
-2026-11-16 | EARLY_BASE | 1D | 26 | 19 | 7 | 52.63 | 0.05 | 0.03
-2026-11-16 | EARLY_BASE | 3D | 26 | 10 | 16 | 70.00 | 0.61 | 0.61
-2026-11-16 | EARLY_BASE | 5D | 26 | 0 | 26 | n/a | n/a | n/a
+2026-11-16 | EARLY_BASE | 1D | 26 | 26 | 0 | 42.31 | -0.20 | -0.14
+2026-11-16 | EARLY_BASE | 3D | 26 | 15 | 11 | 66.67 | 1.12 | 0.67
+2026-11-16 | EARLY_BASE | 5D | 26 | 5 | 21 | 60.00 | 1.44 | 0.37
 2026-11-16 | EARLY_BASE | 10D | 26 | 0 | 26 | n/a | n/a | n/a
-2026-11-16 | PRE-BREAKOUT | 1D | 19 | 15 | 4 | 73.33 | 0.86 | 1.05
-2026-11-16 | PRE-BREAKOUT | 3D | 19 | 8 | 11 | 62.50 | 0.81 | 1.17
-2026-11-16 | PRE-BREAKOUT | 5D | 19 | 0 | 19 | n/a | n/a | n/a
+2026-11-16 | PRE-BREAKOUT | 1D | 19 | 19 | 0 | 63.16 | 0.52 | 0.63
+2026-11-16 | PRE-BREAKOUT | 3D | 19 | 11 | 8 | 63.64 | 0.76 | 0.76
+2026-11-16 | PRE-BREAKOUT | 5D | 19 | 5 | 14 | 20.00 | 0.37 | -0.58
 2026-11-16 | PRE-BREAKOUT | 10D | 19 | 0 | 19 | n/a | n/a | n/a
-2026-11-16 | WATCH | 1D | 24 | 19 | 5 | 57.89 | 0.39 | 0.33
-2026-11-16 | WATCH | 3D | 24 | 10 | 14 | 60.00 | 1.21 | 1.36
-2026-11-16 | WATCH | 5D | 24 | 0 | 24 | n/a | n/a | n/a
+2026-11-16 | WATCH | 1D | 24 | 24 | 0 | 50.00 | -0.03 | -0.02
+2026-11-16 | WATCH | 3D | 24 | 14 | 10 | 42.86 | 0.60 | -0.30
+2026-11-16 | WATCH | 5D | 24 | 5 | 19 | 60.00 | 0.65 | 1.24
 2026-11-16 | WATCH | 10D | 24 | 0 | 24 | n/a | n/a | n/a
 
 OBSERVED STAGE TRANSITIONS
 BREAKOUT -> PRE-BREAKOUT: 2 transition(s), 2 unique symbol(s)
-BREAKOUT -> WATCH: 1 transition(s), 1 unique symbol(s)
+BREAKOUT -> WATCH: 2 transition(s), 1 unique symbol(s)
 EARLY_BASE -> WATCH: 3 transition(s), 3 unique symbol(s)
 PRE-BREAKOUT -> BREAKOUT: 2 transition(s), 2 unique symbol(s)
 PRE-BREAKOUT -> EARLY_BASE: 1 transition(s), 1 unique symbol(s)
-PRE-BREAKOUT -> WATCH: 3 transition(s), 3 unique symbol(s)
+PRE-BREAKOUT -> WATCH: 4 transition(s), 4 unique symbol(s)
 WATCH -> BREAKOUT: 3 transition(s), 3 unique symbol(s)
-WATCH -> EARLY_BASE: 3 transition(s), 3 unique symbol(s)
-WATCH -> PRE-BREAKOUT: 3 transition(s), 3 unique symbol(s)
+WATCH -> EARLY_BASE: 4 transition(s), 4 unique symbol(s)
+WATCH -> PRE-BREAKOUT: 4 transition(s), 4 unique symbol(s)
 
 IMPORTANT METHODOLOGY
 - Signal sample: tracked top actionable/watch candidates plus up to five early-base radar names; not the full 501-stock universe.
