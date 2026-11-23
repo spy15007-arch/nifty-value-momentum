@@ -13,7 +13,7 @@ def _numeric(df, column, default=50.0):
     return pd.to_numeric(df[column], errors="coerce").fillna(default)
 
 
-def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame:
+def build_early_radar(diagnostics: pd.DataFrame, limit: int = 8) -> pd.DataFrame:
     """Rank constructive bases 0.5%-10% below 20-day resistance.
 
     Volume dry-up and up/down-volume are supporting indicators, not hard
@@ -82,6 +82,15 @@ def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame
         100 - ((atr_contraction - 0.70).clip(lower=0) / 0.80 * 100)
     ).clip(0, 100)
 
+    # Reduce priority for late-stage price extension without rejecting it
+    # automatically; missing columns remain neutral for older diagnostic files.
+    rsi = _numeric(candidates, "rsi14", 60.0).clip(0, 100)
+    extension20 = _numeric(candidates, "extension20_pct", 0.0)
+    candidates["radar_extension_penalty"] = (
+        (rsi - 70).clip(lower=0) * 0.75
+        + (extension20 - 0.05).clip(lower=0, upper=0.10) * 150
+    )
+
     candidates["radar_score"] = (
         candidates["early_score"] * 0.23
         + candidates["trend_raw"] * 0.14
@@ -92,6 +101,7 @@ def build_early_radar(diagnostics: pd.DataFrame, limit: int = 5) -> pd.DataFrame
         + candidates["radar_accumulation_score"] * 0.05
         + rs_score * 0.05
         + candidates["radar_atr_contraction_score"] * 0.07
+        - candidates["radar_extension_penalty"]
     ).clip(0, 100)
 
     return candidates.sort_values(
