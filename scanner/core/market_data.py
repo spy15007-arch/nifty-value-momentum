@@ -124,6 +124,19 @@ def indicators(df):
     x["sma200"] = close.rolling(200).mean()
     x["vol20"] = volume.rolling(20).mean()
 
+    # Wilder RSI-14, calculated only from current and prior daily closes.
+    delta = close.diff()
+    gains = delta.clip(lower=0)
+    losses = -delta.clip(upper=0)
+    average_gain = gains.ewm(alpha=1 / 14, min_periods=14, adjust=False).mean()
+    average_loss = losses.ewm(alpha=1 / 14, min_periods=14, adjust=False).mean()
+    relative_strength = average_gain / average_loss.replace(0, np.nan)
+    x["rsi14"] = 100 - (100 / (1 + relative_strength))
+    x.loc[(average_loss == 0) & (average_gain > 0), "rsi14"] = 100.0
+    x.loc[(average_loss == 0) & (average_gain == 0), "rsi14"] = 50.0
+    x["rsi14_prev"] = x["rsi14"].shift(1)
+    x["rsi14_change"] = x["rsi14"] - x["rsi14_prev"]
+
     true_range = pd.concat(
         [
             high - low,
@@ -144,6 +157,9 @@ def indicators(df):
     x["high52"] = high.rolling(252).max()
     x["dist52"] = (x["high52"] - close) / x["high52"]
     x["dist20res"] = (x["high20"] - close) / x["high20"]
+    x["extension20_pct"] = (close / x["sma20"]) - 1.0
+    x["extension50_pct"] = (close / x["sma50"]) - 1.0
+    x["breakout_extension_pct"] = ((close / x["high20"]) - 1.0).clip(lower=0)
     x["atr_pct"] = x["atr14"] / close
     x["atr_pct_20ago"] = x["atr_pct"].shift(20)
     x["vol20_prev"] = x["vol20"].shift(20)
@@ -172,6 +188,12 @@ def latest_metrics(x):
         "sma20": float(row["sma20"]),
         "sma50": float(row["sma50"]),
         "sma200": float(row["sma200"]),
+        "rsi14": float(row["rsi14"]) if pd.notna(row["rsi14"]) else np.nan,
+        "rsi14_prev": float(row["rsi14_prev"]) if pd.notna(row["rsi14_prev"]) else np.nan,
+        "rsi14_change": float(row["rsi14_change"]) if pd.notna(row["rsi14_change"]) else np.nan,
+        "extension20_pct": float(row["extension20_pct"]) if pd.notna(row["extension20_pct"]) else np.nan,
+        "extension50_pct": float(row["extension50_pct"]) if pd.notna(row["extension50_pct"]) else np.nan,
+        "breakout_extension_pct": float(row["breakout_extension_pct"]) if pd.notna(row["breakout_extension_pct"]) else np.nan,
         "volume": float(row["Volume"]),
         "vol20": float(row["vol20"]),
         "vol20_prev": (
