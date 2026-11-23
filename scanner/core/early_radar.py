@@ -131,10 +131,13 @@ def append_early_radar(
             accum = row.get("up_down_volume_ratio", np.nan)
             volume_note = f" | 5D/20D vol {float(dryup):.2f}x" if pd.notna(dryup) else ""
             accumulation_note = f" | Up/down vol {float(accum):.2f}x" if pd.notna(accum) else ""
+            rsi_value = _numeric(pd.DataFrame([row]), "rsi14", 60.0).iloc[0]
+            extension_value = _numeric(pd.DataFrame([row]), "extension20_pct", 0.0).iloc[0]
             lines.append(
                 f"#{rank + 1} {row['symbol']} | EARLY BASE | "
                 f"Price ₹{row['price']:.2f} | 20D resistance ₹{row['resistance']:.2f} | "
                 f"Trigger ₹{row['trigger']:.2f} | {distance:.1f}% below resistance | "
+                f"RSI {rsi_value:.0f} | {extension_value * 100:+.1f}% vs 20-DMA | "
                 f"Radar {row['radar_score']:.0f}{volume_note}{accumulation_note}"
             )
             lines.append("")
