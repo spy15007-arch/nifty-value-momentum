@@ -451,6 +451,12 @@ def technical_scores(
         0.10
     )
 
+    rsi14 = _num(df, "rsi14", 60.0).fillna(60.0).clip(0, 100)
+    extension20 = _num(df, "extension20_pct", np.nan).fillna(
+        price / sma20.replace(0, np.nan) - 1.0
+    ).fillna(0.0)
+    breakout_extension = (-dist20).clip(lower=0.0)
+
     dist52 = _num(
         df,
         "dist52",
@@ -758,6 +764,23 @@ def technical_scores(
 
 
     # =====================================================
+    # ENTRY TIMING / EXTENSION CONTROL
+    # =====================================================
+
+    # RSI >70 is not an automatic rejection. Flag only clearly stretched
+    # moves: far above the 20-DMA, well beyond resistance, or high RSI
+    # combined with a material 20-DMA extension.
+    late_stage = (
+        (extension20 >= 0.10)
+        | (breakout_extension >= 0.035)
+        | ((rsi14 >= 80.0) & (extension20 >= 0.06))
+    )
+    df["rsi14"] = rsi14
+    df["extension20_pct"] = extension20
+    df["breakout_extension_pct"] = breakout_extension
+    df["late_stage"] = late_stage
+
+    # =====================================================
     # BREAKOUT
     # =====================================================
 
@@ -782,6 +805,8 @@ def technical_scores(
         & (dist20 >= -0.025)
 
         & (volume_ratio >= 1.30)
+
+        & ~late_stage
 
         & (df["final_score_base"] >= 72)
 
@@ -810,9 +835,13 @@ def technical_scores(
 
         & (dist20 >= 0.0)
 
-        & (dist20 <= 0.03)
+        # Surface strong setups up to 5% below resistance, before the
+        # final entry zone is reached. They remain WAIT signals until in range.
+        & (dist20 <= 0.05)
 
         & (volume_ratio <= 1.35)
+
+        & ~late_stage
 
         & (atr <= 0.045)
 
@@ -863,6 +892,12 @@ def technical_scores(
 
     )
 
+
+    # Extended candidates remain visible as WATCH, not fresh actionable buys.
+    df.loc[
+        late_stage & df["setup"].isin(["BREAKOUT", "PRE-BREAKOUT"]),
+        "setup"
+    ] = "WATCH"
 
     # =====================================================
     # SECTOR ADJUSTMENT
@@ -982,6 +1017,7 @@ def technical_scores(
         (price >= df["entry_low"])
         & (price <= df["entry_high"])
         & ~chase
+        & ~late_stage
     )
 
     df.loc[
@@ -1133,10 +1169,17 @@ def technical_scores(
     volatility_readiness = (
         100 - (atr.clip(0, 0.06) / 0.06 * 100)
     ).clip(0, 100)
+    extension_penalty = (
+        (extension20 - 0.04).clip(lower=0, upper=0.12) * 150
+        + (rsi14 - 70).clip(lower=0, upper=20) * 0.75
+        + (breakout_extension - 0.01).clip(lower=0, upper=0.05) * 200
+    )
+    df["entry_extension_penalty"] = extension_penalty
     df["entry_readiness_score"] = (
         df["base_raw_score"] * 0.45
         + proximity_score * 0.35
         + volatility_readiness * 0.20
+        - extension_penalty
     ).clip(0, 100)
     df["ranking_score"] = (
         df["final_score"] * 0.80
