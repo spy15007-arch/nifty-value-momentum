@@ -2,34 +2,31 @@
 NIFTY 50 + NEXT 50 + MIDCAP 150 + SMALLCAP 250
 📅 DAILY-TIMEFRAME SCAN | BTST / SWING — NOT AN INTRADAY SIGNAL
 
-📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -1.12% | Stocks above 20-DMA 64% | above 50-DMA 59%
+📊 MARKET SENTIMENT: MIXED / NEUTRAL | Nifty 50 -1.07% | Stocks above 20-DMA 64% | above 50-DMA 59%
 ⚖️ RISK MODE: SELECTIVE — reduce planned risk and demand confirmation.
 
 🎯 ACTIONABLE SETUPS
 
-⭐ #1 <b>LAURUSLABS</b> — PRE-BREAKOUT
-Score 76 | Sector 90 | RSI-14 66 | +6.0% vs 20-DMA
-PRICE ₹2509.00 | ENTRY STATUS: IN RANGE
-BUY RANGE ₹2504.41–₹2542.17
-Ideal ₹2522.03 | SL ₹2384.18
-Risk/share ₹137.86 | SL distance 5.5%
-T1 ₹2728.82 | T2 ₹2866.67
-T3 ₹3004.53 | T4 ₹3211.31
-R:R 1:1.5 / 1:2.5 / 1:3.5 / 1:5.0
+NO HIGH-QUALITY SETUP TODAY.
+
+Market/stock conditions do not
+justify a fresh trade.
+
+NO-TRADE IS A VALID SIGNAL.
 
 👀 WATCH
 
-#1 <b>CUPID</b> | WATCH | Score 83 | Price ₹389.75 | WAIT BELOW ZONE | Zone ₹391.04–₹396.93
+#1 <b>CUPID</b> | WATCH | Score 83 | Price ₹389.50 | WAIT BELOW ZONE | Zone ₹391.04–₹396.93
 
-#2 <b>ANANDRATHI</b> | PRE-BREAKOUT | Score 69 | Price ₹2412.00 | WAIT BELOW ZONE | Zone ₹2416.46–₹2452.89
+#2 <b>LAURUSLABS</b> | PRE-BREAKOUT | Score 76 | Price ₹2504.40 | WAIT BELOW ZONE | Zone ₹2504.41–₹2542.17
 
-#3 <b>MCX</b> | WATCH | Score 76 | Price ₹3895.00 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹3845.68–₹3903.65
+#3 <b>ANANDRATHI</b> | PRE-BREAKOUT | Score 69 | Price ₹2412.20 | WAIT BELOW ZONE | Zone ₹2416.46–₹2452.89
 
-#4 <b>WELSPUNLIV</b> | WATCH | Score 75 | Price ₹285.38 | LATE-STAGE — WAIT FOR RESET | Zone ₹283.08–₹287.35
+#4 <b>WELSPUNLIV</b> | WATCH | Score 75 | Price ₹285.52 | LATE-STAGE — WAIT FOR RESET | Zone ₹283.08–₹287.35
 
-#5 <b>ACUTAAS</b> | PRE-BREAKOUT | Score 72 | Price ₹4079.90 | WAIT BELOW ZONE | Zone ₹4109.35–₹4171.30
+#5 <b>MCX</b> | WATCH | Score 76 | Price ₹3900.00 | IN RANGE; AWAIT SETUP CONFIRMATION | Zone ₹3845.68–₹3903.65
 
-Qualified: 1 | Watch: 94
+Qualified: 0 | Watch: 94
 
 Quality + Value + Trend + Momentum
 Base + Volume + Relative Strength
@@ -38,21 +35,21 @@ Fresh buying only inside the stated range.
 Do not chase above the range.
 🌱 EARLY BASE RADAR — OBSERVE, NOT A BUY SIGNAL
 
-#1 RADICO | EARLY BASE | Price ₹4619.00 | 20D resistance ₹4747.00 | Trigger ₹4756.49 | 2.7% below resistance | RSI 56 | +2.3% vs 20-DMA | Radar 83 | 5D/20D vol 0.72x | Up/down vol 1.70x
+#1 RADICO | EARLY BASE | Price ₹4646.60 | 20D resistance ₹4747.00 | Trigger ₹4756.49 | 2.1% below resistance | RSI 58 | +2.9% vs 20-DMA | Radar 84 | 5D/20D vol 0.72x | Up/down vol 1.69x
 
-#2 INDIGO | EARLY BASE | Price ₹5645.00 | 20D resistance ₹5765.00 | Trigger ₹5776.53 | 2.1% below resistance | RSI 64 | +4.4% vs 20-DMA | Radar 83 | 5D/20D vol 0.81x | Up/down vol 2.03x
+#2 INDIGO | EARLY BASE | Price ₹5659.60 | 20D resistance ₹5765.00 | Trigger ₹5776.53 | 1.8% below resistance | RSI 65 | +4.7% vs 20-DMA | Radar 83 | 5D/20D vol 0.81x | Up/down vol 2.03x
 
-#3 CUPID | EARLY BASE | Price ₹389.75 | 20D resistance ₹393.00 | Trigger ₹393.79 | 0.8% below resistance | RSI 69 | +9.6% vs 20-DMA | Radar 82 | 5D/20D vol 0.78x | Up/down vol 1.66x
+#3 PVRINOX | EARLY BASE | Price ₹1679.10 | 20D resistance ₹1747.00 | Trigger ₹1750.49 | 3.9% below resistance | RSI 63 | +3.9% vs 20-DMA | Radar 82 | 5D/20D vol 0.78x | Up/down vol 2.74x
 
-#4 PVRINOX | EARLY BASE | Price ₹1676.70 | 20D resistance ₹1747.00 | Trigger ₹1750.49 | 4.0% below resistance | RSI 63 | +3.8% vs 20-DMA | Radar 82 | 5D/20D vol 0.78x | Up/down vol 2.73x
+#4 CUPID | EARLY BASE | Price ₹389.50 | 20D resistance ₹393.00 | Trigger ₹393.79 | 0.9% below resistance | RSI 69 | +9.5% vs 20-DMA | Radar 82 | 5D/20D vol 0.79x | Up/down vol 1.67x
 
-#5 ANTHEM | EARLY BASE | Price ₹983.95 | 20D resistance ₹989.10 | Trigger ₹991.08 | 0.5% below resistance | RSI 72 | +6.9% vs 20-DMA | Radar 82 | 5D/20D vol 0.83x | Up/down vol 2.74x
+#5 ANTHEM | EARLY BASE | Price ₹984.15 | 20D resistance ₹989.10 | Trigger ₹991.08 | 0.5% below resistance | RSI 72 | +7.0% vs 20-DMA | Radar 82 | 5D/20D vol 0.84x | Up/down vol 2.75x
 
-#6 INDHOTEL | EARLY BASE | Price ₹885.00 | 20D resistance ₹925.75 | Trigger ₹927.60 | 4.4% below resistance | RSI 61 | +1.3% vs 20-DMA | Radar 82 | 5D/20D vol 0.76x | Up/down vol 2.72x
+#6 INDHOTEL | EARLY BASE | Price ₹884.80 | 20D resistance ₹925.75 | Trigger ₹927.60 | 4.4% below resistance | RSI 61 | +1.3% vs 20-DMA | Radar 82 | 5D/20D vol 0.76x | Up/down vol 2.71x
 
-#7 ATHERENERG | EARLY BASE | Price ₹1896.90 | 20D resistance ₹2021.50 | Trigger ₹2025.54 | 6.2% below resistance | RSI 60 | +1.7% vs 20-DMA | Radar 80 | 5D/20D vol 0.65x | Up/down vol 1.88x
+#7 MANKIND | EARLY BASE | Price ₹2689.40 | 20D resistance ₹2705.00 | Trigger ₹2710.41 | 0.6% below resistance | RSI 65 | +3.5% vs 20-DMA | Radar 80 | 5D/20D vol 0.66x | Up/down vol 1.19x
 
-#8 DLF | EARLY BASE | Price ₹796.00 | 20D resistance ₹812.35 | Trigger ₹813.97 | 2.0% below resistance | RSI 71 | +5.6% vs 20-DMA | Radar 79 | 5D/20D vol 1.10x | Up/down vol 2.92x
+#8 RKFORGE | EARLY BASE | Price ₹781.25 | 20D resistance ₹804.00 | Trigger ₹805.61 | 2.8% below resistance | RSI 61 | +5.8% vs 20-DMA | Radar 80 | 5D/20D vol 0.48x | Up/down vol 2.15x
 
 Wait for a closing breakout with strong volume confirmation.
 No entry, stop-loss or target is issued at the early-base stage.
